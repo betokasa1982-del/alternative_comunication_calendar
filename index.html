@@ -173,13 +173,14 @@
   .cal .wd div{font-size:.78em;color:var(--ink-soft);text-align:center;font-weight:700;padding-bottom:4px}
   .cal .day{aspect-ratio:1;background:var(--surface);border-radius:16px;display:grid;place-items:center;position:relative;font-weight:700;font-size:1.15em;box-shadow:var(--shadow)}
   .cal .day.empty{background:transparent;box-shadow:none}
-  /* passed + unmarked: invisible (keeps grid alignment, avoids confusion) */
-  .cal .day.gone{visibility:hidden}
-  /* marked: big X, like crossing off on a paper calendar */
-  .cal .day.marked{color:transparent}
-  .cal .day.marked::after{content:"✕";position:absolute;inset:0;display:grid;place-items:center;font-size:1.8em;font-weight:800;color:var(--ink)}
+  /* marked: crossed off with a CSS-drawn X (renders the same on every device);
+     the day number stays visible under the stroke, like pen on paper */
+  .cal .day.marked::before,.cal .day.marked::after{
+    content:"";position:absolute;left:50%;top:50%;width:72%;height:5px;border-radius:3px;
+    background:var(--ink);transform:translate(-50%,-50%) rotate(45deg)}
+  .cal .day.marked::after{transform:translate(-50%,-50%) rotate(-45deg)}
   .cal .day.today{background:var(--now);color:#fff;box-shadow:0 0 0 5px rgba(230,165,76,.32)}
-  .cal .day.today.marked::after{color:#fff}
+  .cal .day.today.marked::before,.cal .day.today.marked::after{background:#fff}
   .cal .day.event{background:var(--calm);color:#fff}
   .cal .day.event .evp{position:absolute;inset:10%;display:grid;place-items:center;font-size:1.5em;overflow:hidden}
   .cal .day.event .evp img{width:100%;height:100%;object-fit:contain}
@@ -502,33 +503,33 @@ function renderDetail(){
 function renderCalendar(ev){
   const wrap=$("#dCal"); wrap.innerHTML="";
   const today=parseISO(todayISO()), target=parseISO(ev.date);
+  if(target<today) return; // event passed: no countdown grid
   const marked=new Set(ev.marked||[]);
-  // start at the CURRENT month (past months are gone); end at the later of today/target
+  // render strictly from TODAY to the EVENT DAY — nothing before, nothing after
   let cur=new Date(today.getFullYear(),today.getMonth(),1);
-  const end=new Date(Math.max(today,target));
-  while(cur<=end){
+  const endMonth=new Date(target.getFullYear(),target.getMonth(),1);
+  while(cur<=endMonth){
     const y=cur.getFullYear(), m=cur.getMonth();
+    const isFirstMonth=(y===today.getFullYear() && m===today.getMonth());
+    const isLastMonth=(y===target.getFullYear() && m===target.getMonth());
+    const fromDay=isFirstMonth?today.getDate():1;
+    const toDay=isLastMonth?target.getDate():new Date(y,m+1,0).getDate();
     const month=document.createElement("div"); month.className="month";
     month.innerHTML=`<div class="m-title">${T().mo[m]} ${y}</div>
       <div class="wd">${T().wd.map(w=>`<div>${w}</div>`).join("")}</div>`;
     const days=document.createElement("div"); days.className="days";
-    const first=new Date(y,m,1);
-    const lead=(first.getDay()+6)%7; // Monday-first
+    // align the first rendered day to its weekday column (Monday-first)
+    const lead=(new Date(y,m,fromDay).getDay()+6)%7;
     for(let i=0;i<lead;i++){ const e=document.createElement("div"); e.className="day empty"; days.appendChild(e); }
-    const dim=new Date(y,m+1,0).getDate();
-    for(let d=1;d<=dim;d++){
-      const cell=new Date(y,m,d); const iso=isoOf(cell);
+    for(let d=fromDay;d<=toDay;d++){
+      const iso=isoOf(new Date(y,m,d));
       const el=document.createElement("div"); el.className="day"; el.textContent=d;
-      const diff=Math.round((cell-today)/MS);
       if(iso===ev.date){
         el.className="day event";
         el.innerHTML=`<span class="evn">${d}</span><span class="evp">${ev.src==="emoji"?ev.img:`<img alt="" src="${ev.img}">`}</span>`;
       }else if(iso===todayISO()){
         el.className="day today"+(marked.has(iso)?" marked":"");
         el.addEventListener("click",()=>{ marked.add(iso); ev.marked=[...marked]; saveState(); renderDetail(); renderEvents(); });
-      }else if(diff<0){
-        // passed: keep the crossed-off X trail; hide unmarked days entirely
-        el.className = marked.has(iso) ? "day marked" : "day gone";
       }
       days.appendChild(el);
     }
@@ -693,7 +694,7 @@ function chime(){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webki
   try{
     const blob = new Blob([JSON.stringify(manifest)], {type:"application/manifest+json"});
     const link = document.createElement("link");
-    link.rel = "manifest"; link.href = URL.createObjectURL(blob);
+    link.rel="manifest"; link.href=URL.createObjectURL(blob);
     document.head.appendChild(link);
   }catch(e){}
 })();
