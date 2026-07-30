@@ -172,7 +172,7 @@
   .cal .wd,.cal .days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
   .cal .wd div{font-size:.78em;color:var(--ink-soft);text-align:center;font-weight:700;padding-bottom:4px}
   .cal .day{aspect-ratio:1;background:var(--surface);border-radius:16px;display:grid;place-items:center;position:relative;font-weight:700;font-size:1.15em;box-shadow:var(--shadow)}
-  .cal .day.empty{background:transparent;box-shadow:none}
+  .cal .day.pad{visibility:hidden;box-shadow:none;background:transparent}
   /* marked: crossed off with a CSS-drawn X (renders the same on every device);
      the day number stays visible under the stroke, like pen on paper */
   .cal .day.marked::before,.cal .day.marked::after{
@@ -366,6 +366,7 @@ function isoOf(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,
 function todayISO(){ return isoOf(new Date()); }
 function parseISO(s){ const [y,m,dd]=s.split("-").map(Number); return new Date(y,m-1,dd); }
 function daysUntil(iso){ return Math.round((parseISO(iso) - parseISO(todayISO()))/MS); }
+function mondayCol(d){ return (d.getDay()+6)%7; } // 0=Mon .. 6=Sun
 
 /* ---------------- shorthand ---------------- */
 const $ = s => document.querySelector(s);
@@ -519,8 +520,8 @@ function renderCalendar(ev){
       <div class="wd">${T().wd.map(w=>`<div>${w}</div>`).join("")}</div>`;
     const days=document.createElement("div"); days.className="days";
     // align the first rendered day to its weekday column (Monday-first)
-    const lead=(new Date(y,m,fromDay).getDay()+6)%7;
-    for(let i=0;i<lead;i++){ const e=document.createElement("div"); e.className="day empty"; days.appendChild(e); }
+    const lead=mondayCol(new Date(y,m,fromDay));
+    for(let i=0;i<lead;i++){ const e=document.createElement("div"); e.className="day pad"; days.appendChild(e); }
     for(let d=fromDay;d<=toDay;d++){
       const iso=isoOf(new Date(y,m,d));
       const el=document.createElement("div"); el.className="day"; el.textContent=d;
