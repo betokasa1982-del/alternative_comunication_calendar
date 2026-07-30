@@ -1,54 +1,47 @@
-/* Visual Routine — service worker
-   Bump CACHE version whenever you change index.html or icons. */
-const CACHE = "visual-routine-v1";
-const APP_SHELL = [
-  "./",
-  "./index.html",
-  "./manifest.webmanifest",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/icon-maskable-512.png",
-  "./icons/apple-touch-icon.png"
-];
+# Visual Routine — PWA
 
-self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(APP_SHELL)).then(() => self.skipWaiting()));
-});
+A concrete, picture-based **daily routine** builder and **countdown calendar**
+for children, designed for low cognitive load (large targets, calm palette,
+minimal text). Works offline once loaded and installs as an app on iPad and
+Android tablets.
 
-self.addEventListener("activate", e => {
-  e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
-});
+## Features
+- **Routine tab** — visual daily schedule; tap an activity to run a concrete
+  *Time Timer*-style visual countdown (a colored wedge that empties).
+- **Countdown tab** — add a special day (e.g. a family trip) with a picture and
+  a date. Shows the days remaining, a row of "sleeps", and a **markable
+  calendar grid** (Monday-first) so the child can cross off each day.
+- **Pictures** — search **ARASAAC** pictograms (PT / EN / SV / ES), use a real
+  **photo**, or pick an **emoji**. Chosen pictograms are stored locally so
+  routines work offline.
+- **Child language** — the child-facing countdown text switches PT / EN / SV via
+  the language button (admin UI stays English).
+- **Child lock** — hides editing; long-press the lock to unlock.
 
-self.addEventListener("fetch", e => {
-  const req = e.request;
-  if (req.method !== "GET") return;
-  const url = new URL(req.url);
+## Deploy to GitHub Pages
+1. Put all these files in the repo, keeping the folder structure:
+   ```
+   index.html
+   manifest.webmanifest
+   sw.js
+   icons/  (icon-192.png, icon-512.png, icon-maskable-512.png, apple-touch-icon.png)
+   ```
+2. Repo **Settings ▸ Pages ▸ Build and deployment**: Source = *Deploy from a
+   branch*, Branch = `main`, folder = `/ (root)`. Save.
+3. Open the published URL (`https://USER.github.io/REPO/`). Because the app is
+   `index.html`, you do **not** need to add a filename.
 
-  // ARASAAC pictogram images: cache-first (so a built routine works offline)
-  if (url.hostname.endsWith("arasaac.org")) {
-    e.respondWith(
-      caches.open(CACHE).then(async cache => {
-        const hit = await cache.match(req);
-        if (hit) return hit;
-        try {
-          const res = await fetch(req);
-          cache.put(req, res.clone());
-          return res;
-        } catch (err) {
-          return hit || Response.error();
-        }
-      })
-    );
-    return;
-  }
+## Install on a tablet
+- **Android / Chrome** — an **Install** banner appears in the app; tap it (or
+  browser menu ▸ *Install app*).
+- **iPad / Safari** — Safari has no auto-prompt, so the app shows a hint:
+  **Share ▸ Add to Home Screen**. It then opens full-screen like a native app.
 
-  // App shell (same-origin): cache-first, fall back to network, then to index.html
-  if (url.origin === location.origin) {
-    e.respondWith(
-      caches.match(req).then(hit => hit || fetch(req).catch(() => caches.match("./index.html")))
-    );
-  }
-});
+> After you change `index.html` or the icons, bump `CACHE` in `sw.js`
+> (e.g. `visual-routine-v2`) so tablets pick up the new version.
+
+## Attribution (required)
+Pictograms are property of the Government of Aragón, created by **Sergio Palao**
+for **ARASAAC**, distributed under **CC BY-NC-SA**. Keep this credit and the
+same license on any derivative. Non-commercial use only — for a paid product,
+switch to a commercially-licensed set (e.g. Mulberry Symbols, CC BY-SA).
