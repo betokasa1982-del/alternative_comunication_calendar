@@ -142,6 +142,20 @@
   .lib-card:active{transform:scale(.97)}
   .fav-preview{display:flex;align-items:center;gap:16px;background:var(--surface);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
   .fp-name{font-weight:800;font-size:1.3em}
+  /* help overlay */
+  .help{position:fixed;inset:0;background:var(--bg);z-index:70;display:none;flex-direction:column}
+  .help.open{display:flex}
+  .help header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px}
+  .help .title{font-weight:800;font-size:1.2em}
+  .help .title span{color:var(--calm)}
+  .help-body{flex:1;overflow:auto;padding:4px 18px 20px;display:flex;flex-direction:column;gap:14px;max-width:640px;margin:0 auto;width:100%}
+  .step{display:flex;align-items:center;gap:16px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:16px}
+  .step .n{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:var(--calm);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.1em}
+  .step .art{flex:0 0 auto;width:76px;height:76px;border-radius:16px;background:var(--surface-2);display:grid;place-items:center;font-size:40px;position:relative}
+  .step .art .badge{position:absolute;bottom:-6px;right:-6px;font-size:22px;background:var(--surface);border-radius:50%;padding:2px;box-shadow:var(--shadow)}
+  .step .cap{font-weight:700;font-size:1.05em;line-height:1.25}
+  .help-got{margin:6px auto 22px;height:64px;min-width:160px;border-radius:20px;background:var(--done);color:#fff;font-weight:800;font-size:1.6em;box-shadow:var(--shadow)}
+  .help-got:active{transform:scale(.96)}
   /* timer overlay */
   .timer{position:fixed;inset:0;background:var(--surface);z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px;text-align:center}
   .timer.open{display:flex}
@@ -207,6 +221,7 @@
   <header>
     <div class="title">Visual <span>Routine</span></div>
     <div class="header-btns">
+      <button class="icon-btn" id="helpBtn" title="How to use">?</button>
       <button class="icon-btn lang" id="langBtn" title="Child language">PT</button>
       <button class="icon-btn" id="lockBtn" title="Child lock">🔒</button>
       <button class="icon-btn" id="editBtn" title="Edit">✏️</button>
@@ -319,6 +334,16 @@
       <button class="btn-primary" id="fpConfirm">＋ Add to routine</button>
     </div>
   </div>
+</div>
+
+<!-- Help / how-to overlay -->
+<div class="help" id="help">
+  <header>
+    <div class="title">?&nbsp; <span id="helpTitle">How to use</span></div>
+    <button class="icon-btn" id="helpClose">✕</button>
+  </header>
+  <div class="help-body" id="helpBody"></div>
+  <button class="help-got" id="helpGot">👍</button>
 </div>
 
 <!-- Timer overlay -->
@@ -745,6 +770,54 @@ $("#fpConfirm").addEventListener("click",()=>{
   favPreview.classList.remove("open");
   // keep library open so parents can add several in a row
 });
+
+/* ============================================================
+   HELP (illustrated, minimal text)
+============================================================ */
+const HELP = {
+  pt:{ title:"Como usar", steps:[
+    {n:"1", art:"✏️", cap:"Toque no lápis para montar."},
+    {n:"2", art:"➕", badge:"🖼️", cap:"Adicione uma atividade com figura."},
+    {n:"3", art:"☆", badge:"👆", cap:"Ou pegue um favorito na Biblioteca."},
+    {n:"4", art:"▶", cap:"A criança toca e o tempo aparece."},
+    {n:"5", art:"⏳", cap:"O círculo vai esvaziando."},
+    {n:"6", art:"✓", cap:"Terminou! Passa para a próxima."},
+    {n:"⭐", art:"📅", badge:"✕", cap:"Na aba estrela: marque os dias até a viagem."},
+  ]},
+  en:{ title:"How to use", steps:[
+    {n:"1", art:"✏️", cap:"Tap the pencil to build."},
+    {n:"2", art:"➕", badge:"🖼️", cap:"Add an activity with a picture."},
+    {n:"3", art:"☆", badge:"👆", cap:"Or pick a favorite from the Library."},
+    {n:"4", art:"▶", cap:"The child taps and the time shows."},
+    {n:"5", art:"⏳", cap:"The circle empties as time passes."},
+    {n:"6", art:"✓", cap:"Done! Move to the next one."},
+    {n:"⭐", art:"📅", badge:"✕", cap:"Star tab: cross off days until the trip."},
+  ]},
+  sv:{ title:"Så här", steps:[
+    {n:"1", art:"✏️", cap:"Tryck på pennan för att bygga."},
+    {n:"2", art:"➕", badge:"🖼️", cap:"Lägg till en aktivitet med bild."},
+    {n:"3", art:"☆", badge:"👆", cap:"Eller välj en favorit i biblioteket."},
+    {n:"4", art:"▶", cap:"Barnet trycker och tiden visas."},
+    {n:"5", art:"⏳", cap:"Cirkeln töms med tiden."},
+    {n:"6", art:"✓", cap:"Klart! Gå till nästa."},
+    {n:"⭐", art:"📅", badge:"✕", cap:"Stjärnfliken: kryssa dagar till resan."},
+  ]},
+};
+const helpEl=$("#help");
+function openHelp(){
+  const h=HELP[state.settings.lang]||HELP.pt;
+  $("#helpTitle").textContent=h.title;
+  const body=$("#helpBody"); body.innerHTML="";
+  h.steps.forEach(s=>{
+    const el=document.createElement("div"); el.className="step";
+    el.innerHTML=`<div class="n">${s.n}</div><div class="art">${s.art}${s.badge?`<span class="badge">${s.badge}</span>`:""}</div><div class="cap">${s.cap}</div>`;
+    body.appendChild(el);
+  });
+  helpEl.classList.add("open");
+}
+$("#helpBtn").addEventListener("click",openHelp);
+$("#helpClose").addEventListener("click",()=>helpEl.classList.remove("open"));
+$("#helpGot").addEventListener("click",()=>helpEl.classList.remove("open"));
 
 /* ============================================================
    TIMER
