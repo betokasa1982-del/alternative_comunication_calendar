@@ -573,22 +573,30 @@ function renderDetail(){
 function renderCalendar(ev){
   const wrap=$("#dCal"); wrap.innerHTML="";
   const today=parseISO(todayISO()), target=parseISO(ev.date);
-  if(target<today) return; // event passed: no countdown grid
   const marked=new Set(ev.marked||[]);
-  // render strictly from TODAY to the EVENT DAY — nothing before, nothing after
-  let cur=new Date(today.getFullYear(),today.getMonth(),1);
+  // anchor: the day the countdown STARTED — fixed, so the X trail never disappears.
+  // (older events had no start: fall back to their earliest marked day, else today)
+  let startISO = ev.start;
+  if(!startISO){
+    const ms=(ev.marked||[]).slice().sort();
+    startISO = ms.length ? ms[0] : todayISO();
+    ev.start = startISO; saveState(); // heal old events so it sticks
+  }
+  let start=parseISO(startISO);
+  if(start>today) start=today;          // safety
+  if(target<start) return;              // nothing to show
+  let cur=new Date(start.getFullYear(),start.getMonth(),1);
   const endMonth=new Date(target.getFullYear(),target.getMonth(),1);
   while(cur<=endMonth){
     const y=cur.getFullYear(), m=cur.getMonth();
-    const isFirstMonth=(y===today.getFullYear() && m===today.getMonth());
+    const isFirstMonth=(y===start.getFullYear() && m===start.getMonth());
     const isLastMonth=(y===target.getFullYear() && m===target.getMonth());
-    const fromDay=isFirstMonth?today.getDate():1;
+    const fromDay=isFirstMonth?start.getDate():1;
     const toDay=isLastMonth?target.getDate():new Date(y,m+1,0).getDate();
     const month=document.createElement("div"); month.className="month";
     month.innerHTML=`<div class="m-title">${T().mo[m]} ${y}</div>
       <div class="wd">${T().wd.map(w=>`<div>${w}</div>`).join("")}</div>`;
     const days=document.createElement("div"); days.className="days";
-    // align the first rendered day to its weekday column (Monday-first)
     const lead=mondayCol(new Date(y,m,fromDay));
     for(let i=0;i<lead;i++){ const e=document.createElement("div"); e.className="day pad"; days.appendChild(e); }
     for(let d=fromDay;d<=toDay;d++){
@@ -600,7 +608,10 @@ function renderCalendar(ev){
       }else if(iso===todayISO()){
         el.className="day today"+(marked.has(iso)?" marked":"");
         el.addEventListener("click",()=>{ marked.add(iso); ev.marked=[...marked]; saveState(); renderDetail(); renderEvents(); });
+      }else if(marked.has(iso)){
+        el.className="day marked";      // past day she crossed off -> keep the X
       }
+      // past unmarked days just show the plain number (part of the path)
       days.appendChild(el);
     }
     month.appendChild(days); wrap.appendChild(month);
@@ -719,7 +730,7 @@ $("#saveBtn").addEventListener("click",async()=>{
     const name=labelInput.value.trim()||"Special day";
     const date=dateInput.value||todayISO();
     if(editingIndex>=0) Object.assign(state.events[editingIndex],{name,date,src,img});
-    else state.events.push({id:uid(),name,date,src,img,marked:[]});
+    else state.events.push({id:uid(),name,date,src,img,marked:[],start:todayISO()});
     renderEvents();
   }
   saveState(); closeSheet();
