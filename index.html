@@ -142,6 +142,37 @@
   .lib-card:active{transform:scale(.97)}
   .fav-preview{display:flex;align-items:center;gap:16px;background:var(--surface);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
   .fp-name{font-weight:800;font-size:1.3em}
+  /* AAC talk board */
+  .strip-wrap{display:flex;gap:10px;align-items:stretch;margin-bottom:10px}
+  .strip{flex:1;min-height:96px;background:var(--surface);border-radius:18px;box-shadow:var(--shadow);
+    display:flex;gap:8px;align-items:center;padding:10px;overflow-x:auto}
+  .strip:empty::before{content:"…";color:var(--line);font-size:2em;margin:auto}
+  .chip{flex:0 0 auto;width:76px;background:var(--surface-2);border-radius:14px;padding:6px 4px;text-align:center;border:2px solid var(--line)}
+  .chip .cp{height:44px;display:grid;place-items:center;font-size:32px;overflow:hidden}
+  .chip .cp img{height:100%;object-fit:contain}
+  .chip .cw{font-size:.62em;font-weight:700;line-height:1.05;word-break:break-word}
+  .chip:active{transform:scale(.94)}
+  .strip-actions{display:flex;flex-direction:column;gap:8px;justify-content:center}
+  .sa{width:64px;height:64px;border-radius:18px;box-shadow:var(--shadow);font-size:24px;display:grid;place-items:center;font-weight:800}
+  .sa.play{background:var(--done);color:#fff}
+  .sa.trans{background:var(--calm);color:#fff;font-size:20px}
+  .sa.clear{background:var(--surface);color:var(--ink-soft)}
+  .sa:active{transform:scale(.94)}
+  .transbar{display:none;background:var(--surface);border:3px solid var(--calm);border-radius:16px;padding:12px 16px;margin-bottom:10px;font-weight:700;font-size:1.15em}
+  .transbar.show{display:block}
+  .transbar .tb-src{color:var(--ink-soft);font-size:.85em;font-weight:600;margin-bottom:4px}
+  .cats{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px}
+  .cats button{flex:0 0 auto;height:52px;padding:0 16px;border-radius:16px;background:var(--surface);border:2px solid var(--line);
+    color:var(--ink-soft);font-weight:700;display:flex;align-items:center;gap:8px}
+  .cats button.on{background:var(--calm);color:#fff;border-color:var(--calm)}
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;padding-bottom:8px}
+  .wcard{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:10px 6px;text-align:center;position:relative;border:2px solid transparent}
+  .wcard .wp{height:56px;display:grid;place-items:center;font-size:40px;overflow:hidden;margin-bottom:4px}
+  .wcard .wp img{height:100%;object-fit:contain}
+  .wcard .wl{font-weight:700;font-size:.9em;line-height:1.1;word-break:break-word}
+  .wcard:active{transform:scale(.95);border-color:var(--now)}
+  .wcard .lx{position:absolute;top:-8px;right:-8px;width:32px;height:32px;border-radius:50%;background:var(--danger);color:#fff;display:none;place-items:center;font-size:15px;box-shadow:var(--shadow)}
+  body.editing .wcard.custom .lx{display:grid}
   /* help overlay */
   .help{position:fixed;inset:0;background:var(--bg);z-index:70;display:none;flex-direction:column}
   .help.open{display:flex}
@@ -250,6 +281,22 @@
       <div class="list" id="events"></div>
       <div class="addbar"><button class="addbtn" id="addEventBtn">＋ &nbsp;Add special day</button></div>
     </section>
+
+    <!-- TALK (AAC board) -->
+    <section class="view" id="view-talk">
+      <div class="strip-wrap">
+        <div class="strip" id="strip"></div>
+        <div class="strip-actions">
+          <button class="sa play" id="sayBtn" aria-label="Speak">▶</button>
+          <button class="sa trans" id="transBtn" aria-label="Translate">SV</button>
+          <button class="sa clear" id="clearBtn" aria-label="Clear">🗑️</button>
+        </div>
+      </div>
+      <div class="transbar" id="transbar"></div>
+      <div class="cats" id="cats"></div>
+      <div class="board" id="board"></div>
+      <div class="addbar"><button class="addbtn" id="addWordBtn">＋ &nbsp;Add word</button></div>
+    </section>
   </main>
 </div>
 
@@ -257,6 +304,7 @@
 <nav class="tabs">
   <button data-tab="routine" class="on"><span class="ic">🗓️</span><span id="tabRoutineLbl">Routine</span></button>
   <button data-tab="countdown"><span class="ic">⭐</span><span id="tabCountdownLbl">Countdown</span></button>
+  <button data-tab="talk"><span class="ic">💬</span><span id="tabTalkLbl">Talk</span></button>
 </nav>
 
 <!-- Editor sheet (shared: activity | event) -->
@@ -276,6 +324,13 @@
       <div class="field" id="dateField" style="flex:0 0 170px;display:none">
         <label>Date</label>
         <input id="dateInput" type="date" />
+      </div>
+    </div>
+    <div class="row" id="wordFields" style="display:none">
+      <div class="field"><label>Svenska (SV)</label><input id="svInput" placeholder="e.g. äta" autocomplete="off" /></div>
+      <div class="field"><label>English (EN)</label><input id="enInput" placeholder="e.g. eat" autocomplete="off" /></div>
+      <div class="field" style="flex:0 0 150px"><label>Category</label>
+        <select id="catSel"></select>
       </div>
     </div>
 
@@ -384,15 +439,18 @@ const MS = 86400000;
 /* child-facing strings (only these are translated; admin UI stays English) */
 const STR = {
   pt:{ toGo:"Faltam", one:"Falta", days:"dias", day:"dia", today:"É hoje! 🎉", passed:"Já passou", stamp:"Marcar hoje",
-       tabRoutine:"Rotina", tabCountdown:"Contagem",
+       tabRoutine:"Rotina", tabCountdown:"Contagem", tabTalk:"Falar",
+       cats:{social:"Social",people:"Pessoas",actions:"Ações",feel:"Sentimentos",food:"Comida",places:"Lugares",things:"Coisas"},
        wd:["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"],
        mo:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"] },
   sv:{ toGo:"", one:"", days:"dagar", day:"dag", today:"Idag! 🎉", passed:"Passerat", stamp:"Markera idag",
-       tabRoutine:"Rutin", tabCountdown:"Nedräkning",
+       tabRoutine:"Rutin", tabCountdown:"Nedräkning", tabTalk:"Prata",
+       cats:{social:"Socialt",people:"Personer",actions:"Handlingar",feel:"Känslor",food:"Mat",places:"Platser",things:"Saker"},
        wd:["Mån","Tis","Ons","Tor","Fre","Lör","Sön"],
        mo:["Januari","Februari","Mars","April","Maj","Juni","Juli","Augusti","September","Oktober","November","December"] },
   en:{ toGo:"", one:"", days:"days", day:"day", today:"Today! 🎉", passed:"Passed", stamp:"Mark today",
-       tabRoutine:"Routine", tabCountdown:"Countdown",
+       tabRoutine:"Routine", tabCountdown:"Countdown", tabTalk:"Talk",
+       cats:{social:"Social",people:"People",actions:"Actions",feel:"Feelings",food:"Food",places:"Places",things:"Things"},
        wd:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
        mo:["January","February","March","April","May","June","July","August","September","October","November","December"] }
 };
@@ -422,13 +480,15 @@ function seed(){
       { id:uid(), label:"Bath",       src:"emoji", img:"🛁", minutes:10, done:false }
     ],
     events:[],
-    favorites:[]
+    favorites:[],
+    aacCards:[]
   };
 }
 let state = loadState() || seed();
 if(!state.settings) state.settings={lang:"pt"};
 if(!state.events) state.events=[];
 if(!state.favorites) state.favorites=[];
+if(!state.aacCards) state.aacCards=[];
 
 /* ---------------- date helpers ---------------- */
 function isoOf(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
@@ -448,6 +508,7 @@ function applyLang(){
   langBtn.textContent = state.settings.lang.toUpperCase();
   $("#tabRoutineLbl").textContent = T().tabRoutine;
   $("#tabCountdownLbl").textContent = T().tabCountdown;
+  $("#tabTalkLbl").textContent = T().tabTalk;
   renderAll();
 }
 langBtn.addEventListener("click",()=>{
@@ -472,6 +533,7 @@ document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",
   const tab=b.dataset.tab;
   $("#view-routine").classList.toggle("on",tab==="routine");
   $("#view-countdown").classList.toggle("on",tab==="countdown");
+  $("#view-talk").classList.toggle("on",tab==="talk");
 }));
 
 /* ============================================================
@@ -632,19 +694,27 @@ function openSheet(mode,index){
   $("#minutesField").style.display = mode==="activity"?"":"none";
   $("#dateField").style.display    = mode==="event"?"":"none";
   $("#favField").style.display     = mode==="activity"?"flex":"none";
+  $("#wordFields").style.display   = mode==="word"?"flex":"none";
   $("#favChk").checked = false;
+  if(mode==="word"){
+    const sel=$("#catSel");
+    if(!sel.options.length) CAT_ORDER.forEach(c=>{ const o=document.createElement("option"); o.value=c; o.textContent=T().cats[c]; sel.appendChild(o); });
+  }
   if(editingIndex>=0){
-    const it = mode==="activity"?state.activities[editingIndex]:state.events[editingIndex];
-    sheetTitle.textContent = mode==="activity"?"Edit activity":"Edit special day";
-    labelInput.value = mode==="activity"?it.label:it.name;
-    if(mode==="activity") minutesInput.value=it.minutes; else dateInput.value=it.date;
+    const it = mode==="activity"?state.activities[editingIndex]:(mode==="event"?state.events[editingIndex]:state.aacCards[editingIndex]);
+    sheetTitle.textContent = mode==="activity"?"Edit activity":(mode==="event"?"Edit special day":"Edit word");
+    labelInput.value = mode==="activity"?it.label:(mode==="event"?it.name:(it.labels&&it.labels.pt)||"");
+    if(mode==="activity") minutesInput.value=it.minutes;
+    if(mode==="event") dateInput.value=it.date;
+    if(mode==="word"){ $("#svInput").value=(it.labels&&it.labels.sv)||""; $("#enInput").value=(it.labels&&it.labels.en)||""; $("#catSel").value=it.cat||"things"; }
     draft={src:it.src,img:it.img};
   }else{
-    sheetTitle.textContent = mode==="activity"?"Add activity":"Add special day";
+    sheetTitle.textContent = mode==="activity"?"Add activity":(mode==="event"?"Add special day":"Add word");
     labelInput.value=""; minutesInput.value=10;
-    dateInput.value=""; draft={src:"emoji",img:null};
+    dateInput.value=""; $("#svInput").value=""; $("#enInput").value="";
+    draft={src:"emoji",img:null};
   }
-  labelInput.placeholder = mode==="activity"?"e.g. Breakfast":"e.g. Trip to grandma";
+  labelInput.placeholder = mode==="activity"?"e.g. Breakfast":(mode==="event"?"e.g. Trip to grandma":"Português, ex.: bolo");
   setSource(draft.src||"arasaac"); updatePreview();
   $("#searchGrid").innerHTML=""; $("#searchInput").value=""; buildEmojiGrid();
   sheet.classList.add("open");
@@ -726,12 +796,21 @@ $("#saveBtn").addEventListener("click",async()=>{
     else state.activities.push({id:uid(),label,minutes,src,img,done:false});
     if($("#favChk").checked) addFavorite({label,minutes,src,img});
     renderRoutine();
-  }else{
+  }else if(editMode==="event"){
     const name=labelInput.value.trim()||"Special day";
     const date=dateInput.value||todayISO();
     if(editingIndex>=0) Object.assign(state.events[editingIndex],{name,date,src,img});
     else state.events.push({id:uid(),name,date,src,img,marked:[],start:todayISO()});
     renderEvents();
+  }else{ // word
+    const pt=labelInput.value.trim()||"palavra";
+    const sv=$("#svInput").value.trim()||pt;
+    const en=$("#enInput").value.trim()||pt;
+    const cat=$("#catSel").value||"things";
+    const labels={pt,sv,en};
+    if(editingIndex>=0) Object.assign(state.aacCards[editingIndex],{labels,cat,src,img});
+    else state.aacCards.push({id:uid(),labels,cat,src,img});
+    renderCats(); renderBoard();
   }
   saveState(); closeSheet();
 });
@@ -783,6 +862,119 @@ $("#fpConfirm").addEventListener("click",()=>{
 });
 
 /* ============================================================
+   TALK — AAC board (multi-language)
+   Child builds a sentence, hears/confirms it in the native
+   language, THEN translates+speaks it for the teacher.
+============================================================ */
+const CORE_VOCAB=[
+ // cat, emoji, pt, sv, en
+ ["social","👋","olá","hej","hello"],["social","👋🏽","tchau","hej då","bye"],
+ ["social","✅","sim","ja","yes"],["social","❌","não","nej","no"],
+ ["social","🙏","por favor","snälla","please"],["social","💚","obrigado","tack","thank you"],
+ ["social","🆘","ajuda","hjälp","help"],
+ ["people","👧","eu","jag","I"],["people","🫵","você","du","you"],
+ ["people","👩","mamãe","mamma","mom"],["people","👨","papai","pappa","dad"],
+ ["people","👩‍🏫","professora","fröken","teacher"],["people","🧒","amigo","kompis","friend"],
+ ["actions","🙋","quero","vill ha","want"],["actions","🍽️","comer","äta","eat"],
+ ["actions","🥤","beber","dricka","drink"],["actions","🧸","brincar","leka","play"],
+ ["actions","🚶","ir","gå","go"],["actions","😴","dormir","sova","sleep"],
+ ["actions","🚽","banheiro","toalett","toilet"],["actions","✋","parar","stanna","stop"],
+ ["actions","➕","mais","mer","more"],["actions","🏁","acabou","klart","finished"],
+ ["feel","😊","feliz","glad","happy"],["feel","😢","triste","ledsen","sad"],
+ ["feel","😠","bravo","arg","angry"],["feel","🥱","cansado","trött","tired"],
+ ["feel","🤒","doente","sjuk","sick"],["feel","😨","com medo","rädd","scared"],
+ ["feel","🤕","dor","ont","pain"],
+ ["food","💧","água","vatten","water"],["food","🥛","leite","mjölk","milk"],
+ ["food","🧃","suco","saft","juice"],["food","🍞","pão","bröd","bread"],
+ ["food","🍎","maçã","äpple","apple"],["food","🍌","banana","banan","banana"],
+ ["food","🍪","biscoito","kex","cookie"],["food","🍚","comida","mat","food"],
+ ["places","🏠","casa","hem","home"],["places","🏫","escola","skola","school"],
+ ["places","🌳","parque","park","park"],["places","🌤️","lá fora","ute","outside"],
+ ["things","🧸","brinquedo","leksak","toy"],["things","📱","tablet","platta","tablet"],
+ ["things","📚","livro","bok","book"],["things","⚽","bola","boll","ball"],
+ ["things","🎵","música","musik","music"],["things","🧩","quebra-cabeça","pussel","puzzle"],
+].map((r,i)=>({id:"core"+i,cat:r[0],src:"emoji",img:r[1],labels:{pt:r[2],sv:r[3],en:r[4]},core:true}));
+
+const CAT_ORDER=["social","people","actions","feel","food","places","things"];
+const CAT_ICON={social:"👋",people:"👨‍👩‍👧",actions:"🏃",feel:"😊",food:"🍎",places:"🏠",things:"🧸"};
+let activeCat="social";
+let sentence=[]; // session-only
+
+function allWords(){ return CORE_VOCAB.concat(state.aacCards||[]); }
+function wordLabel(w,lang){ const L=w.labels||{}; return L[lang]||L.pt||L.en||""; }
+function wordPic(w){ return w.src==="emoji"?`<span>${w.img}</span>`:`<img alt="" src="${w.img}">`; }
+
+/* ---- speech ---- */
+const VOICE_LANG={pt:"pt-BR",sv:"sv-SE",en:"en-US"};
+function speak(text,lang){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang=VOICE_LANG[lang]||"pt-BR"; u.rate=0.85;
+    const v=(window.speechSynthesis.getVoices()||[]).find(v=>v.lang&&v.lang.toLowerCase().startsWith((VOICE_LANG[lang]||"").slice(0,2).toLowerCase()));
+    if(v) u.voice=v;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ---- board ---- */
+function renderCats(){
+  const c=$("#cats"); c.innerHTML="";
+  CAT_ORDER.forEach(cat=>{
+    const b=document.createElement("button");
+    b.innerHTML=`${CAT_ICON[cat]} ${T().cats[cat]}`;
+    b.classList.toggle("on",cat===activeCat);
+    b.addEventListener("click",()=>{ activeCat=cat; renderCats(); renderBoard(); });
+    c.appendChild(b);
+  });
+}
+function renderBoard(){
+  const b=$("#board"); b.innerHTML="";
+  const lang=state.settings.lang;
+  allWords().filter(w=>w.cat===activeCat).forEach(w=>{
+    const c=document.createElement("div");
+    c.className="wcard"+(w.core?"":" custom");
+    c.innerHTML=`<div class="wp">${wordPic(w)}</div><div class="wl">${escapeHtml(wordLabel(w,lang))}</div><button class="lx" aria-label="Remove">✕</button>`;
+    c.addEventListener("click",e=>{
+      if(e.target.closest(".lx")) return;
+      if(document.body.classList.contains("editing")&&!w.core){ openSheet("word",state.aacCards.indexOf(w)); return; }
+      sentence.push(w); renderStrip();
+      speak(wordLabel(w,lang),lang); // per-tap auditory feedback in native language
+    });
+    const x=c.querySelector(".lx");
+    x.addEventListener("click",()=>{ state.aacCards=state.aacCards.filter(z=>z.id!==w.id); saveState(); renderBoard(); });
+    b.appendChild(c);
+  });
+}
+function renderStrip(){
+  const s=$("#strip"); s.innerHTML="";
+  const lang=state.settings.lang;
+  sentence.forEach((w,i)=>{
+    const ch=document.createElement("div"); ch.className="chip";
+    ch.innerHTML=`<div class="cp">${wordPic(w)}</div><div class="cw">${escapeHtml(wordLabel(w,lang))}</div>`;
+    ch.addEventListener("click",()=>{ sentence.splice(i,1); renderStrip(); });
+    s.appendChild(ch);
+  });
+  $("#transbar").classList.remove("show");
+}
+function sentenceText(lang){ return sentence.map(w=>wordLabel(w,lang)).join(" "); }
+
+$("#sayBtn").addEventListener("click",()=>{ if(sentence.length) speak(sentenceText(state.settings.lang),state.settings.lang); });
+$("#clearBtn").addEventListener("click",()=>{ sentence=[]; renderStrip(); });
+$("#transBtn").addEventListener("click",()=>{
+  if(!sentence.length) return;
+  const from=state.settings.lang, to=(from==="sv")?"pt":"sv"; // native <-> Swedish
+  const tb=$("#transbar");
+  tb.innerHTML=`<div class="tb-src">${sentenceText(from)}</div><div>🗣️ ${escapeHtml(sentenceText(to))}</div>`;
+  tb.classList.add("show");
+  speak(sentenceText(to),to);
+});
+
+/* ---- add-word button (parents) ---- */
+$("#addWordBtn").addEventListener("click",()=>openSheet("word"));
+
+/* ============================================================
    HELP (illustrated, minimal text)
 ============================================================ */
 const HELP = {
@@ -794,6 +986,7 @@ const HELP = {
     {n:"5", art:"⏳", cap:"O círculo vai esvaziando."},
     {n:"6", art:"✓", cap:"Terminou! Passa para a próxima."},
     {n:"⭐", art:"📅", badge:"✕", cap:"Na aba estrela: marque os dias até a viagem."},
+    {n:"💬", art:"🗣️", badge:"🇸🇪", cap:"Na aba falar: monte a frase, ouça em português e traduza."},
   ]},
   en:{ title:"How to use", steps:[
     {n:"1", art:"✏️", cap:"Tap the pencil to build."},
@@ -803,6 +996,7 @@ const HELP = {
     {n:"5", art:"⏳", cap:"The circle empties as time passes."},
     {n:"6", art:"✓", cap:"Done! Move to the next one."},
     {n:"⭐", art:"📅", badge:"✕", cap:"Star tab: cross off days until the trip."},
+    {n:"💬", art:"🗣️", badge:"🇸🇪", cap:"Talk tab: build the sentence, hear it, then translate."},
   ]},
   sv:{ title:"Så här", steps:[
     {n:"1", art:"✏️", cap:"Tryck på pennan för att bygga."},
@@ -812,6 +1006,7 @@ const HELP = {
     {n:"5", art:"⏳", cap:"Cirkeln töms med tiden."},
     {n:"6", art:"✓", cap:"Klart! Gå till nästa."},
     {n:"⭐", art:"📅", badge:"✕", cap:"Stjärnfliken: kryssa dagar till resan."},
+    {n:"💬", art:"🗣️", badge:"🇸🇪", cap:"Prata-fliken: bygg meningen, lyssna och översätt."},
   ]},
 };
 const helpEl=$("#help");
@@ -888,7 +1083,7 @@ window.addEventListener("appinstalled",()=>banner.classList.remove("show"));
 
 /* ---------------- boot ---------------- */
 document.addEventListener("dblclick",e=>e.preventDefault(),{passive:false});
-function renderAll(){ renderRoutine(); renderEvents(); if(detailEvent) renderDetail(); }
+function renderAll(){ renderRoutine(); renderEvents(); if(detailEvent) renderDetail(); renderCats(); renderBoard(); renderStrip(); }
 applyLang();
 </script>
 </body>
