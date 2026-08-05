@@ -170,7 +170,15 @@
   .wcard .wp{height:56px;display:grid;place-items:center;font-size:40px;overflow:hidden;margin-bottom:4px}
   .wcard .wp img{height:100%;object-fit:contain}
   .wcard .wl{font-weight:700;font-size:.9em;line-height:1.1;word-break:break-word}
-  .wcard:active{transform:scale(.95);border-color:var(--now)}
+  .wcard:active{transform:scale(.95)}
+  /* Fitzgerald key — standard AAC color coding, so the child finds words by color */
+  .wcard[data-cat="people"]{border-color:#e8c84f;background:#fffbea}
+  .wcard[data-cat="actions"]{border-color:#7fbb7a;background:#f2fbf1}
+  .wcard[data-cat="feel"]{border-color:#7aa8d8;background:#f0f6fd}
+  .wcard[data-cat="social"]{border-color:#e8a0bf;background:#fdf2f7}
+  .wcard[data-cat="food"]{border-color:#e8A45f;background:#fdf6ec}
+  .wcard[data-cat="places"]{border-color:#b39ddb;background:#f6f2fc}
+  .wcard[data-cat="things"]{border-color:#bcaaa4;background:#f9f5f3}
   .wcard .lx{position:absolute;top:-8px;right:-8px;width:32px;height:32px;border-radius:50%;background:var(--danger);color:#fff;display:none;place-items:center;font-size:15px;box-shadow:var(--shadow)}
   body.editing .wcard.custom .lx{display:grid}
   /* help overlay */
@@ -439,17 +447,17 @@ const MS = 86400000;
 /* child-facing strings (only these are translated; admin UI stays English) */
 const STR = {
   pt:{ toGo:"Faltam", one:"Falta", days:"dias", day:"dia", today:"É hoje! 🎉", passed:"Já passou", stamp:"Marcar hoje",
-       tabRoutine:"Rotina", tabCountdown:"Contagem", tabTalk:"Falar",
+       tabRoutine:"Rotina", tabCountdown:"Contagem", tabTalk:"Falar", catsAll:"Todas",
        cats:{social:"Social",people:"Pessoas",actions:"Ações",feel:"Sentimentos",food:"Comida",places:"Lugares",things:"Coisas"},
        wd:["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"],
        mo:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"] },
   sv:{ toGo:"", one:"", days:"dagar", day:"dag", today:"Idag! 🎉", passed:"Passerat", stamp:"Markera idag",
-       tabRoutine:"Rutin", tabCountdown:"Nedräkning", tabTalk:"Prata",
+       tabRoutine:"Rutin", tabCountdown:"Nedräkning", tabTalk:"Prata", catsAll:"Alla",
        cats:{social:"Socialt",people:"Personer",actions:"Handlingar",feel:"Känslor",food:"Mat",places:"Platser",things:"Saker"},
        wd:["Mån","Tis","Ons","Tor","Fre","Lör","Sön"],
        mo:["Januari","Februari","Mars","April","Maj","Juni","Juli","Augusti","September","Oktober","November","December"] },
   en:{ toGo:"", one:"", days:"days", day:"day", today:"Today! 🎉", passed:"Passed", stamp:"Mark today",
-       tabRoutine:"Routine", tabCountdown:"Countdown", tabTalk:"Talk",
+       tabRoutine:"Routine", tabCountdown:"Countdown", tabTalk:"Talk", catsAll:"All",
        cats:{social:"Social",people:"People",actions:"Actions",feel:"Feelings",food:"Food",places:"Places",things:"Things"},
        wd:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
        mo:["January","February","March","April","May","June","July","August","September","October","November","December"] }
@@ -481,7 +489,8 @@ function seed(){
     ],
     events:[],
     favorites:[],
-    aacCards:[]
+    aacCards:[],
+    aacPics:{}
   };
 }
 let state = loadState() || seed();
@@ -489,6 +498,7 @@ if(!state.settings) state.settings={lang:"pt"};
 if(!state.events) state.events=[];
 if(!state.favorites) state.favorites=[];
 if(!state.aacCards) state.aacCards=[];
+if(!state.aacPics) state.aacPics={};
 
 /* ---------------- date helpers ---------------- */
 function isoOf(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
@@ -534,6 +544,7 @@ document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",
   $("#view-routine").classList.toggle("on",tab==="routine");
   $("#view-countdown").classList.toggle("on",tab==="countdown");
   $("#view-talk").classList.toggle("on",tab==="talk");
+  if(tab==="talk") fetchCorePics();
 }));
 
 /* ============================================================
@@ -867,42 +878,76 @@ $("#fpConfirm").addEventListener("click",()=>{
    language, THEN translates+speaks it for the teacher.
 ============================================================ */
 const CORE_VOCAB=[
- // cat, emoji, pt, sv, en
- ["social","👋","olá","hej","hello"],["social","👋🏽","tchau","hej då","bye"],
- ["social","✅","sim","ja","yes"],["social","❌","não","nej","no"],
- ["social","🙏","por favor","snälla","please"],["social","💚","obrigado","tack","thank you"],
- ["social","🆘","ajuda","hjälp","help"],
- ["people","👧","eu","jag","I"],["people","🫵","você","du","you"],
- ["people","👩","mamãe","mamma","mom"],["people","👨","papai","pappa","dad"],
- ["people","👩‍🏫","professora","fröken","teacher"],["people","🧒","amigo","kompis","friend"],
- ["actions","🙋","quero","vill ha","want"],["actions","🍽️","comer","äta","eat"],
- ["actions","🥤","beber","dricka","drink"],["actions","🧸","brincar","leka","play"],
- ["actions","🚶","ir","gå","go"],["actions","😴","dormir","sova","sleep"],
- ["actions","🚽","banheiro","toalett","toilet"],["actions","✋","parar","stanna","stop"],
- ["actions","➕","mais","mer","more"],["actions","🏁","acabou","klart","finished"],
- ["feel","😊","feliz","glad","happy"],["feel","😢","triste","ledsen","sad"],
- ["feel","😠","bravo","arg","angry"],["feel","🥱","cansado","trött","tired"],
- ["feel","🤒","doente","sjuk","sick"],["feel","😨","com medo","rädd","scared"],
- ["feel","🤕","dor","ont","pain"],
- ["food","💧","água","vatten","water"],["food","🥛","leite","mjölk","milk"],
- ["food","🧃","suco","saft","juice"],["food","🍞","pão","bröd","bread"],
- ["food","🍎","maçã","äpple","apple"],["food","🍌","banana","banan","banana"],
- ["food","🍪","biscoito","kex","cookie"],["food","🍚","comida","mat","food"],
- ["places","🏠","casa","hem","home"],["places","🏫","escola","skola","school"],
- ["places","🌳","parque","park","park"],["places","🌤️","lá fora","ute","outside"],
- ["things","🧸","brinquedo","leksak","toy"],["things","📱","tablet","platta","tablet"],
- ["things","📚","livro","bok","book"],["things","⚽","bola","boll","ball"],
- ["things","🎵","música","musik","music"],["things","🧩","quebra-cabeça","pussel","puzzle"],
-].map((r,i)=>({id:"core"+i,cat:r[0],src:"emoji",img:r[1],labels:{pt:r[2],sv:r[3],en:r[4]},core:true}));
+ // cat, emoji(fallback), pt, sv, en, arasaacSearch(pt)
+ // --- priority core words first (flat board is direct: most-needed on top) ---
+ ["people","👧","eu","jag","I","yo"],
+ ["actions","🙋","quero","vill ha","want","querer"],
+ ["social","✅","sim","ja","yes","sí"],
+ ["social","❌","não","nej","no","no"],
+ ["actions","➕","mais","mer","more","más"],
+ ["actions","🏁","acabou","klart","finished","terminar"],
+ ["social","🆘","ajuda","hjälp","help","ayudar"],
+ ["actions","🚽","banheiro","toalett","toilet","inodoro"],
+ ["actions","🍽️","comer","äta","eat","comer"],
+ ["actions","🥤","beber","dricka","drink","beber"],
+ ["feel","🤕","dor","ont","pain","dolor"],
+ ["actions","🧸","brincar","leka","play","jugar"],
+ // --- people ---
+ ["people","🫵","você","du","you","tú"],
+ ["people","👩","mamãe","mamma","mom","mamá"],
+ ["people","👨","papai","pappa","dad","papá"],
+ ["people","👩‍🏫","professora","fröken","teacher","profesora"],
+ ["people","🧒","amigo","kompis","friend","amigo"],
+ // --- social ---
+ ["social","👋","olá","hej","hello","hola"],
+ ["social","👋🏽","tchau","hej då","bye","adiós"],
+ ["social","🙏","por favor","snälla","please","por favor"],
+ ["social","💚","obrigado","tack","thank you","gracias"],
+ // --- actions ---
+ ["actions","🚶","ir","gå","go","ir"],
+ ["actions","😴","dormir","sova","sleep","dormir"],
+ ["actions","✋","parar","stanna","stop","parar"],
+ // --- feelings ---
+ ["feel","😊","feliz","glad","happy","contento"],
+ ["feel","😢","triste","ledsen","sad","triste"],
+ ["feel","😠","bravo","arg","angry","enfadado"],
+ ["feel","🥱","cansado","trött","tired","cansado"],
+ ["feel","🤒","doente","sjuk","sick","enfermo"],
+ ["feel","😨","com medo","rädd","scared","miedo"],
+ // --- food ---
+ ["food","💧","água","vatten","water","agua"],
+ ["food","🥛","leite","mjölk","milk","leche"],
+ ["food","🧃","suco","saft","juice","zumo"],
+ ["food","🍞","pão","bröd","bread","pan"],
+ ["food","🍎","maçã","äpple","apple","manzana"],
+ ["food","🍌","banana","banan","banana","plátano"],
+ ["food","🍪","biscoito","kex","cookie","galleta"],
+ ["food","🍚","comida","mat","food","comida"],
+ // --- places ---
+ ["places","🏠","casa","hem","home","casa"],
+ ["places","🏫","escola","skola","school","colegio"],
+ ["places","🌳","parque","park","park","parque"],
+ ["places","🌤️","lá fora","ute","outside","fuera"],
+ // --- things ---
+ ["things","🧸","brinquedo","leksak","toy","juguete"],
+ ["things","📱","tablet","platta","tablet","tableta"],
+ ["things","📚","livro","bok","book","libro"],
+ ["things","⚽","bola","boll","ball","pelota"],
+ ["things","🎵","música","musik","music","música"],
+ ["things","🧩","quebra-cabeça","pussel","puzzle","puzzle"],
+].map((r,i)=>({id:"core"+i,cat:r[0],src:"emoji",img:r[1],labels:{pt:r[2],sv:r[3],en:r[4]},q:r[5],core:true}));
 
 const CAT_ORDER=["social","people","actions","feel","food","places","things"];
 const CAT_ICON={social:"👋",people:"👨‍👩‍👧",actions:"🏃",feel:"😊",food:"🍎",places:"🏠",things:"🧸"};
-let activeCat="social";
+let activeCat="all";
 let sentence=[]; // session-only
 
 function allWords(){ return CORE_VOCAB.concat(state.aacCards||[]); }
 function wordLabel(w,lang){ const L=w.labels||{}; return L[lang]||L.pt||L.en||""; }
-function wordPic(w){ return w.src==="emoji"?`<span>${w.img}</span>`:`<img alt="" src="${w.img}">`; }
+function wordPic(w){
+  if(w.core && state.aacPics[w.id]) return `<img alt="" src="${state.aacPics[w.id]}">`;
+  return w.src==="emoji"?`<span>${w.img}</span>`:`<img alt="" src="${w.img}">`;
+}
 
 /* ---- speech ---- */
 const VOICE_LANG={pt:"pt-BR",sv:"sv-SE",en:"en-US"};
@@ -921,9 +966,9 @@ function speak(text,lang){
 /* ---- board ---- */
 function renderCats(){
   const c=$("#cats"); c.innerHTML="";
-  CAT_ORDER.forEach(cat=>{
+  ["all"].concat(CAT_ORDER).forEach(cat=>{
     const b=document.createElement("button");
-    b.innerHTML=`${CAT_ICON[cat]} ${T().cats[cat]}`;
+    b.innerHTML = cat==="all" ? `⠿ ${T().catsAll}` : `${CAT_ICON[cat]} ${T().cats[cat]}`;
     b.classList.toggle("on",cat===activeCat);
     b.addEventListener("click",()=>{ activeCat=cat; renderCats(); renderBoard(); });
     c.appendChild(b);
@@ -932,9 +977,10 @@ function renderCats(){
 function renderBoard(){
   const b=$("#board"); b.innerHTML="";
   const lang=state.settings.lang;
-  allWords().filter(w=>w.cat===activeCat).forEach(w=>{
+  allWords().filter(w=>activeCat==="all"||w.cat===activeCat).forEach(w=>{
     const c=document.createElement("div");
     c.className="wcard"+(w.core?"":" custom");
+    c.dataset.cat=w.cat;
     c.innerHTML=`<div class="wp">${wordPic(w)}</div><div class="wl">${escapeHtml(wordLabel(w,lang))}</div><button class="lx" aria-label="Remove">✕</button>`;
     c.addEventListener("click",e=>{
       if(e.target.closest(".lx")) return;
@@ -970,6 +1016,27 @@ $("#transBtn").addEventListener("click",()=>{
   tb.classList.add("show");
   speak(sentenceText(to),to);
 });
+
+/* ---- ARASAAC pictograms for core words: fetch once, cache in the app ---- */
+let picsFetching=false;
+async function fetchCorePics(){
+  if(picsFetching) return; picsFetching=true;
+  const missing=CORE_VOCAB.filter(w=>!state.aacPics[w.id]);
+  let got=0;
+  for(const w of missing){
+    try{
+      const r=await fetch(`${ARASAAC_API}/es/search/${encodeURIComponent(w.q)}`);
+      if(!r.ok) continue;
+      const data=await r.json();
+      const id=data&&data[0]&&(data[0]._id||data[0].id);
+      if(!id) continue;
+      const dataUrl=await urlToDataUrl(ARASAAC_IMG(id));
+      if(dataUrl){ state.aacPics[w.id]=dataUrl; got++; if(got%6===0){ saveState(); renderBoard(); renderStrip(); } }
+    }catch(e){ /* offline or blocked: emoji fallback stays */ }
+  }
+  if(got){ saveState(); renderBoard(); renderStrip(); }
+  picsFetching=false;
+}
 
 /* ---- add-word button (parents) ---- */
 $("#addWordBtn").addEventListener("click",()=>openSheet("word"));
