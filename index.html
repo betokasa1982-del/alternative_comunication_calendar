@@ -165,11 +165,12 @@
   .cats button{flex:0 0 auto;height:52px;padding:0 16px;border-radius:16px;background:var(--surface);border:2px solid var(--line);
     color:var(--ink-soft);font-weight:700;display:flex;align-items:center;gap:8px}
   .cats button.on{background:var(--calm);color:#fff;border-color:var(--calm)}
-  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;padding-bottom:8px}
-  .wcard{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:10px 6px;text-align:center;position:relative;border:2px solid transparent}
-  .wcard .wp{height:64px;display:grid;place-items:center;font-size:40px;overflow:hidden;margin-bottom:4px}
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));grid-auto-rows:1fr;gap:10px;padding-bottom:8px}
+  .wcard{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:10px 6px 8px;text-align:center;position:relative;border:2px solid transparent;
+    display:flex;flex-direction:column;align-items:center;min-height:128px}
+  .wcard .wp{flex:0 0 66px;height:66px;width:100%;display:grid;place-items:center;font-size:40px;overflow:hidden;margin-bottom:4px}
   .wcard .wp img{width:100%;height:100%;object-fit:contain}
-  .wcard .wl{font-weight:700;font-size:.9em;line-height:1.1;word-break:break-word}
+  .wcard .wl{font-weight:700;font-size:.82em;line-height:1.12;min-height:2.3em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;word-break:normal;width:100%}
   .wcard:active{transform:scale(.95)}
   /* Fitzgerald key — standard AAC color coding, so the child finds words by color */
   .wcard[data-cat="people"]{border-color:#e8c84f;background:#fffbea}
@@ -180,7 +181,7 @@
   .wcard[data-cat="places"]{border-color:#b39ddb;background:#f6f2fc}
   .wcard[data-cat="things"]{border-color:#bcaaa4;background:#f9f5f3}
   .wcard .lx{position:absolute;top:-8px;right:-8px;width:32px;height:32px;border-radius:50%;background:var(--danger);color:#fff;display:none;place-items:center;font-size:15px;box-shadow:var(--shadow)}
-  body.editing .wcard.custom .lx{display:grid}
+  body.editing .wcard .lx{display:grid}
   /* help overlay */
   .help{position:fixed;inset:0;background:var(--bg);z-index:70;display:none;flex-direction:column}
   .help.open{display:flex}
@@ -490,7 +491,9 @@ function seed(){
     events:[],
     favorites:[],
     aacCards:[],
-    aacPics:{}
+    aacPics:{},
+    aacPicsQ:{},
+    aacHidden:[]
   };
 }
 let state = loadState() || seed();
@@ -499,6 +502,8 @@ if(!state.events) state.events=[];
 if(!state.favorites) state.favorites=[];
 if(!state.aacCards) state.aacCards=[];
 if(!state.aacPics) state.aacPics={};
+if(!state.aacPicsQ) state.aacPicsQ={};
+if(!state.aacHidden) state.aacHidden=[];
 
 /* ---------------- date helpers ---------------- */
 function isoOf(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
@@ -525,7 +530,7 @@ langBtn.addEventListener("click",()=>{
   const i=LANGS.indexOf(state.settings.lang); state.settings.lang=LANGS[(i+1)%LANGS.length];
   saveState(); applyLang();
 });
-editBtn.addEventListener("click",()=>{ document.body.classList.toggle("editing"); editBtn.classList.toggle("active"); });
+editBtn.addEventListener("click",()=>{ document.body.classList.toggle("editing"); editBtn.classList.toggle("active"); renderCats(); renderBoard(); });
 lockBtn.addEventListener("click",()=>{
   const locked=document.body.classList.toggle("locked");
   lockBtn.textContent=locked?"🔓":"🔒"; editBtn.style.display=locked?"none":"";
@@ -730,7 +735,7 @@ function openSheet(mode,index){
   $("#searchGrid").innerHTML=""; $("#searchInput").value=""; buildEmojiGrid();
   sheet.classList.add("open");
 }
-function closeSheet(){ sheet.classList.remove("open"); }
+function closeSheet(){ sheet.classList.remove("open"); coreReplaceId=null; }
 $("#addActivityBtn").addEventListener("click",()=>openSheet("activity"));
 $("#addEventBtn").addEventListener("click",()=>openSheet("event"));
 $("#cancelBtn").addEventListener("click",closeSheet);
@@ -821,6 +826,7 @@ $("#saveBtn").addEventListener("click",async()=>{
     const labels={pt,sv,en};
     if(editingIndex>=0) Object.assign(state.aacCards[editingIndex],{labels,cat,src,img});
     else state.aacCards.push({id:uid(),labels,cat,src,img});
+    if(coreReplaceId){ if(!state.aacHidden.includes(coreReplaceId)) state.aacHidden.push(coreReplaceId); coreReplaceId=null; }
     renderCats(); renderBoard();
   }
   saveState(); closeSheet();
@@ -881,7 +887,7 @@ const CORE_VOCAB=[
  // cat, emoji(fallback), pt, sv, en, arasaacSearch(pt)
  // --- priority core words first (flat board is direct: most-needed on top) ---
  ["people","👧","eu","jag","I","yo"],
- ["actions","🙋","quero","vill ha","want","querer"],
+ ["actions","🙋","quero","vill ha","want","desear"],
  ["social","✅","sim","ja","yes","sí"],
  ["social","❌","não","nej","no","no"],
  ["actions","➕","mais","mer","more","más"],
@@ -942,7 +948,7 @@ const CAT_ICON={social:"👋",people:"👨‍👩‍👧",actions:"🏃",feel:"�
 let activeCat="all";
 let sentence=[]; // session-only
 
-function allWords(){ return CORE_VOCAB.concat(state.aacCards||[]); }
+function allWords(){ return CORE_VOCAB.filter(w=>!(state.aacHidden||[]).includes(w.id)).concat(state.aacCards||[]); }
 function wordLabel(w,lang){ const L=w.labels||{}; return L[lang]||L.pt||L.en||""; }
 function wordPic(w){
   if(w.core && state.aacPics[w.id]) return `<img alt="" src="${state.aacPics[w.id]}">`;
@@ -973,6 +979,13 @@ function renderCats(){
     b.addEventListener("click",()=>{ activeCat=cat; renderCats(); renderBoard(); });
     c.appendChild(b);
   });
+  if(document.body.classList.contains("editing") && (state.aacHidden||[]).length){
+    const r=document.createElement("button");
+    r.innerHTML=`↺ ${state.aacHidden.length}`;
+    r.title="Restore hidden words";
+    r.addEventListener("click",()=>{ state.aacHidden=[]; saveState(); renderCats(); renderBoard(); });
+    c.appendChild(r);
+  }
 }
 function renderBoard(){
   const b=$("#board"); b.innerHTML="";
@@ -984,12 +997,19 @@ function renderBoard(){
     c.innerHTML=`<div class="wp">${wordPic(w)}</div><div class="wl">${escapeHtml(wordLabel(w,lang))}</div><button class="lx" aria-label="Remove">✕</button>`;
     c.addEventListener("click",e=>{
       if(e.target.closest(".lx")) return;
-      if(document.body.classList.contains("editing")&&!w.core){ openSheet("word",state.aacCards.indexOf(w)); return; }
+      if(document.body.classList.contains("editing")){
+        if(w.core) editCoreWord(w); else openSheet("word",state.aacCards.indexOf(w));
+        return;
+      }
       sentence.push(w); renderStrip();
       speak(wordLabel(w,lang),lang); // per-tap auditory feedback in native language
     });
     const x=c.querySelector(".lx");
-    x.addEventListener("click",()=>{ state.aacCards=state.aacCards.filter(z=>z.id!==w.id); saveState(); renderBoard(); });
+    x.addEventListener("click",()=>{
+      if(w.core){ if(!state.aacHidden.includes(w.id)) state.aacHidden.push(w.id); }
+      else state.aacCards=state.aacCards.filter(z=>z.id!==w.id);
+      saveState(); renderCats(); renderBoard();
+    });
     b.appendChild(c);
   });
 }
@@ -1021,7 +1041,7 @@ $("#transBtn").addEventListener("click",()=>{
 let picsFetching=false;
 async function fetchCorePics(){
   if(picsFetching) return; picsFetching=true;
-  const missing=CORE_VOCAB.filter(w=>!state.aacPics[w.id]);
+  const missing=CORE_VOCAB.filter(w=>!state.aacPics[w.id] || state.aacPicsQ[w.id]!==w.q);
   let got=0;
   for(const w of missing){
     try{
@@ -1031,13 +1051,26 @@ async function fetchCorePics(){
       const id=data&&data[0]&&(data[0]._id||data[0].id);
       if(!id) continue;
       const dataUrl=await urlToDataUrl(ARASAAC_IMG(id));
-      if(dataUrl){ state.aacPics[w.id]=dataUrl; got++; if(got%6===0){ saveState(); renderBoard(); renderStrip(); } }
+      if(dataUrl){ state.aacPics[w.id]=dataUrl; state.aacPicsQ[w.id]=w.q; got++; if(got%6===0){ saveState(); renderBoard(); renderStrip(); } }
     }catch(e){ /* offline or blocked: emoji fallback stays */ }
   }
   if(got){ saveState(); renderBoard(); renderStrip(); }
   picsFetching=false;
 }
 
+let coreReplaceId=null;
+function editCoreWord(w){
+  openSheet("word");
+  labelInput.value=(w.labels&&w.labels.pt)||"";
+  $("#svInput").value=(w.labels&&w.labels.sv)||"";
+  $("#enInput").value=(w.labels&&w.labels.en)||"";
+  $("#catSel").value=w.cat||"things";
+  const pic=state.aacPics[w.id];
+  draft = pic ? {src:"arasaac",img:pic} : {src:"emoji",img:w.img};
+  updatePreview();
+  $("#searchInput").value=w.q||"";
+  coreReplaceId=w.id;
+}
 /* ---- add-word button (parents) ---- */
 $("#addWordBtn").addEventListener("click",()=>openSheet("word"));
 
