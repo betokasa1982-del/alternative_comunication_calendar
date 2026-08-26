@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Routine" />
+<meta name="theme-color" content="#eef2f6" />
+<!-- manifest injected at runtime -->
+<link rel="apple-touch-icon" href="data:image/png;base64,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" />
+<title>Visual Routine</title>
+<style>
+  :root{
+    --bg:#eef2f6; --surface:#fff; --surface-2:#f6f9fb; --ink:#26333d; --ink-soft:#5c6b75;
+    --line:#d9e2e8; --calm:#5b8ba0; --now:#e6a54c; --done:#6ba368; --danger:#c96a5f;
+    --radius:22px; --shadow:0 6px 20px rgba(38,51,61,.10); --tap:72px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;margin:0}
+  body{
+    font-family:ui-rounded,"SF Pro Rounded",-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);font-size:clamp(17px,2.4vw,22px);line-height:1.35;
+    -webkit-user-select:none;user-select:none;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+  }
+  button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select{font-family:inherit;font-size:inherit}
+
+  .app{max-width:1000px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;gap:10px}
+  header .title{font-weight:700;font-size:1.15em}
+  header .title span{color:var(--calm)}
+  .header-btns{display:flex;gap:10px}
+  .icon-btn{width:var(--tap);height:var(--tap);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;font-size:24px}
+  .icon-btn.active{background:var(--calm);color:#fff}
+  .icon-btn:active{transform:scale(.96)}
+  .icon-btn.lang{font-size:16px;font-weight:700;color:var(--calm)}
+
+  main{flex:1;padding:6px 16px 100px}
+  .view{display:none}
+  .view.on{display:block}
+
+  .progress{display:flex;gap:10px;justify-content:center;padding:4px 0 16px;flex-wrap:wrap}
+  .dot{width:16px;height:16px;border-radius:50%;background:var(--line)}
+  .dot.done{background:var(--done)}
+  .dot.now{background:var(--now);box-shadow:0 0 0 5px rgba(230,165,76,.22)}
+
+  .list{display:flex;flex-direction:column;gap:14px}
+  .card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;align-items:center;gap:18px;padding:16px;position:relative;border:3px solid transparent;transition:border-color .2s,opacity .2s;min-height:118px}
+  .card .pic{width:96px;height:96px;flex:0 0 96px;border-radius:16px;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;font-size:52px}
+  .card .pic img{width:100%;height:100%;object-fit:contain}
+  .card .meta{flex:1;min-width:0}
+  .card .label{font-weight:700;font-size:1.25em;line-height:1.2;word-break:break-word}
+  .card .sub{color:var(--ink-soft);margin-top:4px;display:flex;align-items:center;gap:6px}
+  .card .go{flex:0 0 auto;width:var(--tap);height:var(--tap);border-radius:20px;background:var(--calm);color:#fff;font-size:30px;display:grid;place-items:center;box-shadow:var(--shadow)}
+  .card .go:active{transform:scale(.95)}
+  .card.now{border-color:var(--now)}
+  .card.done{opacity:.55}
+  .card.done .go{background:var(--done)}
+  .card .go.t-check{background:var(--done)}
+  .card .go.t-clock{background:var(--calm)}
+  .card.soon{border-color:var(--now)}
+  .card.soon .sub b{color:var(--now)}
+  .card .check{position:absolute;top:-10px;right:-10px;width:40px;height:40px;border-radius:50%;background:var(--done);color:#fff;display:none;place-items:center;font-size:22px;box-shadow:var(--shadow)}
+  .card.done .check{display:grid}
+  /* countdown badge on event cards */
+  .card .count{flex:0 0 auto;min-width:84px;height:84px;border-radius:18px;background:var(--surface-2);display:grid;place-items:center;text-align:center;padding:6px;border:2px solid var(--line)}
+  .card .count b{font-size:1.9em;line-height:1;color:var(--calm)}
+  .card .count small{color:var(--ink-soft);font-size:.7em}
+  .card .count.soon b{color:var(--now)}
+  .card .count.today b{color:var(--done)}
+
+  .card .edit-tools{display:none;flex-direction:column;gap:8px;flex:0 0 auto}
+  body.editing .card .go,body.editing .card .count{display:none}
+  body.editing .card .edit-tools{display:flex}
+  body.editing .card{border-style:dashed;border-color:var(--line)}
+  .mini{width:52px;height:52px;border-radius:14px;background:var(--surface-2);display:grid;place-items:center;font-size:22px;color:var(--ink-soft)}
+  .mini.del{color:var(--danger)}
+  .mini:active{transform:scale(.94)}
+
+  .empty{text-align:center;color:var(--ink-soft);padding:56px 20px;background:var(--surface);border-radius:var(--radius);border:2px dashed var(--line)}
+  .empty .big{font-size:56px;margin-bottom:10px}
+
+  .addbar{display:none;position:sticky;bottom:96px;padding:14px 0 6px}
+  body.editing .addbar{display:flex;gap:10px;background:linear-gradient(transparent,var(--bg) 40%)}
+  .addbtn{flex:1;height:64px;border-radius:20px;background:var(--calm);color:#fff;font-weight:700;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;gap:10px;font-size:1.05em}
+  .addbtn.secondary{background:var(--surface);color:var(--calm);border:2px solid var(--line)}
+
+  /* bottom tab bar */
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);display:flex;padding:8px 12px calc(8px + env(safe-area-inset-bottom));gap:10px;max-width:1000px;margin:0 auto}
+  .tabs button{flex:1;height:64px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink-soft);font-size:.8em;font-weight:600}
+  .tabs button .ic{font-size:26px}
+  .tabs button.on{color:var(--calm);background:var(--surface-2)}
+
+  /* install banner */
+  .install{display:none;align-items:center;gap:12px;margin:0 16px 12px;padding:12px 14px;background:var(--surface);border-radius:16px;box-shadow:var(--shadow)}
+  .install.show{display:flex}
+  .install .txt{flex:1;font-size:.9em}
+  .install button.go{height:52px;padding:0 20px;border-radius:14px;background:var(--calm);color:#fff;font-weight:700}
+  .install button.x{width:44px;height:44px;border-radius:12px;color:var(--ink-soft);font-size:20px}
+
+  /* modal sheet */
+  .scrim{position:fixed;inset:0;background:rgba(38,51,61,.45);display:none;align-items:flex-end;justify-content:center;z-index:50}
+  .scrim.open{display:flex}
+  .sheet{background:var(--bg);width:100%;max-width:640px;border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-height:92dvh;overflow:auto;box-shadow:0 -10px 40px rgba(0,0,0,.2)}
+  .sheet h2{margin:2px 0 14px;font-size:1.2em}
+  .row{display:flex;gap:10px;margin-bottom:12px}
+  .field{flex:1}
+  .field label{display:block;font-size:.8em;color:var(--ink-soft);margin:0 0 6px 4px;font-weight:600}
+  .field input,.field select{width:100%;height:58px;border-radius:16px;border:2px solid var(--line);background:var(--surface);padding:0 16px;color:var(--ink)}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--calm)}
+  .seg{display:flex;gap:8px;margin-bottom:14px}
+  .seg button{flex:1;height:56px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--ink-soft);font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+  .seg button.on{background:var(--calm);color:#fff;border-color:var(--calm)}
+  .picsource{margin-bottom:14px}
+  .searchrow{display:flex;gap:8px;margin-bottom:10px}
+  .searchrow input{flex:1;height:58px;border-radius:16px;border:2px solid var(--line);background:var(--surface);padding:0 16px}
+  .searchrow select{flex:0 0 96px;height:58px;border-radius:16px;border:2px solid var(--line);background:var(--surface);padding:0 12px}
+  .searchrow button{width:58px;height:58px;border-radius:16px;background:var(--calm);color:#fff;font-size:24px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px;min-height:60px}
+  .grid .thumb{aspect-ratio:1;background:var(--surface);border-radius:14px;border:2px solid var(--line);display:grid;place-items:center;overflow:hidden;padding:6px}
+  .grid .thumb img{width:100%;height:100%;object-fit:contain}
+  .grid .thumb.sel{border-color:var(--now);box-shadow:0 0 0 3px rgba(230,165,76,.3)}
+  .hint{color:var(--ink-soft);font-size:.85em;text-align:center;padding:10px}
+  .emojis{display:flex;flex-wrap:wrap;gap:8px}
+  .emojis button{width:56px;height:56px;font-size:30px;border-radius:14px;background:var(--surface);border:2px solid var(--line)}
+  .emojis button.sel{border-color:var(--now)}
+  .sheet-actions{display:flex;gap:10px;margin-top:8px}
+  .sheet-actions button{flex:1;height:62px;border-radius:16px;font-weight:700}
+  .btn-primary{background:var(--calm);color:#fff}
+  .btn-ghost{background:var(--surface);border:2px solid var(--line);color:var(--ink-soft)}
+  .preview-pic{width:84px;height:84px;border-radius:16px;background:var(--surface);border:2px solid var(--line);display:grid;place-items:center;overflow:hidden;font-size:44px;flex:0 0 auto}
+  .preview-pic img{width:100%;height:100%;object-fit:contain}
+
+  .favchk{display:none;align-items:center;gap:10px;margin:2px 4px 14px;color:var(--ink-soft);font-weight:600}
+  .favchk input{width:26px;height:26px;accent-color:var(--now)}
+  .lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;min-height:80px}
+  .lib-card{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:12px;text-align:center;position:relative}
+  .lib-card .lp{width:72px;height:72px;margin:0 auto 6px;border-radius:14px;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;font-size:40px}
+  .lib-card .lp img{width:100%;height:100%;object-fit:contain}
+  .lib-card .ln{font-weight:700;font-size:.95em;line-height:1.15;word-break:break-word}
+  .lib-card .lm{color:var(--ink-soft);font-size:.8em;margin-top:2px}
+  .lib-card .lx{position:absolute;top:-8px;right:-8px;width:34px;height:34px;border-radius:50%;background:var(--danger);color:#fff;display:grid;place-items:center;font-size:16px;box-shadow:var(--shadow)}
+  .lib-card:active{transform:scale(.97)}
+  .fav-preview{display:flex;align-items:center;gap:16px;background:var(--surface);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
+  .fp-name{font-weight:800;font-size:1.3em}
+  /* floating mini-timer (timer keeps running while using other tabs) */
+  .mini-timer{position:fixed;right:14px;bottom:calc(98px + env(safe-area-inset-bottom));width:80px;height:80px;
+    border-radius:50%;z-index:45;display:none;box-shadow:var(--shadow);cursor:pointer}
+  .mini-timer.show{display:block}
+  .mini-disc{width:100%;height:100%;border-radius:50%;
+    background:conic-gradient(var(--now) calc(var(--pct)*1%), var(--surface-2) 0);
+    box-shadow:inset 0 0 0 5px var(--surface-2)}
+  .mini-center{position:absolute;inset:24%;border-radius:50%;background:var(--surface);
+    display:grid;place-items:center;overflow:hidden;font-size:22px}
+  .mini-center img{width:82%;height:82%;object-fit:contain}
+  .mini-timer.finished .mini-disc{background:var(--done)}
+  .mini-timer.finished .mini-center{display:none}
+  .mini-timer.finished::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:32px;font-weight:800}
+  .t-btn.talk{background:var(--surface-2);font-size:26px}
+
+  /* day rail: vertical sun->moon timeline beside the routine list */
+  .day-wrap{display:flex;gap:10px;align-items:stretch}
+  .rail{flex:0 0 92px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+    position:sticky;top:8px;align-self:flex-start;height:calc(100dvh - 270px);min-height:380px;padding-left:4px}
+  .rail-end{font-size:24px;line-height:1;width:30px;text-align:center}
+  .rail-track{flex:1;width:22px;margin-left:4px;background:var(--surface);border-radius:11px;position:relative;
+    box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
+  .rail-passed{position:absolute;top:0;left:0;right:0;background:rgba(230,165,76,.55);border-radius:11px 11px 0 0}
+  .rail-now{position:absolute;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;
+    background:#fff;border:3px solid var(--now);box-shadow:var(--shadow);z-index:3;
+    display:grid;place-items:center;font-size:19px;line-height:1}
+  .rail-mark{position:absolute;left:calc(100% + 12px);transform:translateY(-50%);width:46px;height:46px;border-radius:12px;
+    background:var(--surface);border:3px solid var(--calm);display:grid;place-items:center;overflow:hidden;font-size:24px;z-index:2}
+  .rail-mark::before{content:"";position:absolute;right:100%;top:50%;transform:translateY(-50%);width:12px;height:4px;background:var(--calm);border-radius:2px}
+  .rail-mark img{width:88%;height:88%;object-fit:contain}
+  .rail-mark.done{border-color:var(--done);opacity:.55}
+  .rail-mark.soon{border-color:var(--now)}
+  @media (prefers-reduced-motion: no-preference){
+    .rail-mark.soon{animation:rail-pulse 1.6s ease-in-out infinite}
+    @keyframes rail-pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,165,76,.45)}50%{box-shadow:0 0 0 10px rgba(230,165,76,0)}}
+  }
+  .rail-mark:active{transform:translateY(-50%) scale(.94)}
+
+  /* day-line (sun -> moon) for clock activities */
+  .dayline{position:fixed;inset:0;background:var(--surface);z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px;text-align:center}
+  .dayline.open{display:flex}
+  .dayline .dl-label{font-size:1.5em;font-weight:800}
+  .dl-time{font-size:2.4em;font-weight:800;color:var(--calm);font-variant-numeric:tabular-nums}
+  .dl-track-wrap{width:min(86vw,760px);display:flex;align-items:center;gap:12px;margin-top:78px}
+  .dl-end{font-size:38px;flex:0 0 auto}
+  .dl-track{position:relative;flex:1;height:26px;background:var(--surface-2);border-radius:13px;box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
+  .dl-passed{position:absolute;left:0;top:0;bottom:0;background:rgba(230,165,76,.55);border-radius:13px 0 0 13px}
+  .dl-now{position:absolute;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:#fff;border:4px solid var(--now);box-shadow:var(--shadow);z-index:2;display:grid;place-items:center;font-size:24px;line-height:1}
+  .dl-event{position:absolute;bottom:calc(100% + 14px);transform:translateX(-50%);width:76px;height:76px;border-radius:20px;background:var(--surface);border:4px solid var(--calm);box-shadow:var(--shadow);display:grid;place-items:center;font-size:40px;z-index:1}
+  .dl-event img{width:88%;height:88%;object-fit:contain}
+  .dl-event::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);width:5px;height:14px;background:var(--calm);border-radius:3px}
+  .dl-event>span,.dl-event>img{border-radius:14px;overflow:hidden}
+  .dayline.soon .dl-event{border-color:var(--now)}
+  @media (prefers-reduced-motion: no-preference){
+    .dayline.soon .dl-event{animation:dl-pulse 1.6s ease-in-out infinite}
+    @keyframes dl-pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,165,76,.45)}50%{box-shadow:0 0 0 14px rgba(230,165,76,0)}}
+  }
+  .dl-msg{min-height:1.5em;font-weight:800;font-size:1.25em;color:var(--now)}
+  .dayline.arrived .dl-msg{color:var(--done)}
+  .dl-actions{display:flex;gap:14px}
+
+  /* AAC talk board */
+  .strip-wrap{display:flex;gap:10px;align-items:stretch;margin-bottom:10px}
+  .strip{flex:1;min-height:96px;background:var(--surface);border-radius:18px;box-shadow:var(--shadow);
+    display:flex;gap:8px;align-items:center;padding:10px;overflow-x:auto}
+  .strip:empty::before{content:"…";color:var(--line);font-size:2em;margin:auto}
+  .chip{flex:0 0 auto;width:76px;background:var(--surface-2);border-radius:14px;padding:6px 4px;text-align:center;border:2px solid var(--line)}
+  .chip .cp{height:48px;display:grid;place-items:center;font-size:32px;overflow:hidden}
+  .chip .cp img{width:100%;height:100%;object-fit:contain}
+  .chip .cw{font-size:.62em;font-weight:700;line-height:1.05;word-break:break-word}
+  .chip:active{transform:scale(.94)}
+  .strip-actions{display:flex;flex-direction:column;gap:8px;justify-content:center}
+  .sa{width:64px;height:64px;border-radius:18px;box-shadow:var(--shadow);font-size:24px;display:grid;place-items:center;font-weight:800}
+  .sa.play{background:var(--done);color:#fff}
+  .sa.trans{background:var(--calm);color:#fff;font-size:20px}
+  .sa.clear{background:var(--surface);color:var(--ink-soft)}
+  .sa:active{transform:scale(.94)}
+  .transbar{display:none;background:var(--surface);border:3px solid var(--calm);border-radius:16px;padding:12px 16px;margin-bottom:10px;font-weight:700;font-size:1.15em}
+  .transbar.show{display:block}
+  .transbar .tb-src{color:var(--ink-soft);font-size:.85em;font-weight:600;margin-bottom:4px}
+  .cats{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px}
+  .cats button{flex:0 0 auto;height:52px;padding:0 16px;border-radius:16px;background:var(--surface);border:2px solid var(--line);
+    color:var(--ink-soft);font-weight:700;display:flex;align-items:center;gap:8px}
+  .cats button.on{background:var(--calm);color:#fff;border-color:var(--calm)}
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));grid-auto-rows:1fr;gap:10px;padding-bottom:8px}
+  .wcard{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:10px 6px 8px;text-align:center;position:relative;border:2px solid transparent;
+    display:flex;flex-direction:column;align-items:center;min-height:128px}
+  .wcard .wp{flex:0 0 66px;height:66px;width:100%;display:grid;place-items:center;font-size:40px;overflow:hidden;margin-bottom:4px}
+  .wcard .wp img{width:100%;height:100%;object-fit:contain}
+  .wcard .wl{font-weight:700;font-size:.82em;line-height:1.12;min-height:2.3em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;word-break:normal;width:100%}
+  .wcard:active{transform:scale(.95)}
+  /* Fitzgerald key — standard AAC color coding, so the child finds words by color */
+  .wcard[data-cat="people"]{border-color:#e8c84f;background:#fffbea}
+  .wcard[data-cat="actions"]{border-color:#7fbb7a;background:#f2fbf1}
+  .wcard[data-cat="feel"]{border-color:#7aa8d8;background:#f0f6fd}
+  .wcard[data-cat="social"]{border-color:#e8a0bf;background:#fdf2f7}
+  .wcard[data-cat="food"]{border-color:#e8A45f;background:#fdf6ec}
+  .wcard[data-cat="places"]{border-color:#b39ddb;background:#f6f2fc}
+  .wcard[data-cat="things"]{border-color:#bcaaa4;background:#f9f5f3}
+  .wcard .lx{position:absolute;top:-8px;right:-8px;width:32px;height:32px;border-radius:50%;background:var(--danger);color:#fff;display:none;place-items:center;font-size:15px;box-shadow:var(--shadow)}
+  body.editing .wcard .lx{display:grid}
+  /* help overlay */
+  .help{position:fixed;inset:0;background:var(--bg);z-index:70;display:none;flex-direction:column}
+  .help.open{display:flex}
+  .help header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px}
+  .help .title{font-weight:800;font-size:1.2em}
+  .help .title span{color:var(--calm)}
+  .help-body{flex:1;overflow:auto;padding:4px 18px 20px;display:flex;flex-direction:column;gap:14px;max-width:640px;margin:0 auto;width:100%}
+  .step{display:flex;align-items:center;gap:16px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:16px}
+  .step .n{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:var(--calm);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.1em}
+  .step .art{flex:0 0 auto;width:76px;height:76px;border-radius:16px;background:var(--surface-2);display:grid;place-items:center;font-size:40px;position:relative}
+  .step .art .badge{position:absolute;bottom:-6px;right:-6px;font-size:22px;background:var(--surface);border-radius:50%;padding:2px;box-shadow:var(--shadow)}
+  .step .cap{font-weight:700;font-size:1.05em;line-height:1.25}
+  .help-got{margin:6px auto 22px;height:64px;min-width:160px;border-radius:20px;background:var(--done);color:#fff;font-weight:800;font-size:1.6em;box-shadow:var(--shadow)}
+  .help-got:active{transform:scale(.96)}
+  /* timer overlay */
+  .timer{position:fixed;inset:0;background:var(--surface);z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px;text-align:center}
+  .timer.open{display:flex}
+  .timer .t-label{font-size:1.6em;font-weight:700}
+  .disc-wrap{position:relative;width:min(70vw,55vh);aspect-ratio:1}
+  .disc{width:100%;height:100%;border-radius:50%;background:conic-gradient(var(--now) calc(var(--pct)*1%), var(--surface-2) 0);box-shadow:inset 0 0 0 10px var(--surface-2), var(--shadow)}
+  .disc-center{position:absolute;inset:22%;border-radius:50%;background:var(--surface);display:grid;place-items:center;overflow:hidden;box-shadow:inset 0 0 0 4px #fff, 0 4px 14px rgba(0,0,0,.08)}
+  .disc-center img{width:66%;height:66%;object-fit:contain}
+  .disc-center .emoji{font-size:16vh}
+  .t-time{font-size:2.2em;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .t-actions{display:flex;gap:14px}
+  .t-btn{height:70px;padding:0 26px;border-radius:20px;font-weight:700;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
+  .t-btn.done{background:var(--done);color:#fff;font-size:1.15em;padding:0 40px}
+  .t-btn.stop{background:var(--surface-2);color:var(--ink-soft)}
+  .t-done-badge{font-size:64px;color:var(--done);display:none}
+  .timer.finished .disc{background:var(--done)}
+  .timer.finished .t-done-badge{display:block}
+  .timer.finished .t-time{display:none}
+
+  /* countdown detail overlay */
+  .detail{position:fixed;inset:0;background:var(--bg);z-index:55;display:none;flex-direction:column}
+  .detail.open{display:flex}
+  .detail header{padding:14px 18px}
+  .detail .body{flex:1;overflow:auto;padding:0 18px 30px;text-align:center}
+  .d-pic{width:120px;height:120px;margin:6px auto 4px;border-radius:24px;background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden;font-size:64px}
+  .d-pic img{width:100%;height:100%;object-fit:contain}
+  .d-name{font-weight:800;font-size:1.5em}
+  .d-count{margin:14px 0 6px}
+  .d-count .num{font-size:5em;font-weight:800;color:var(--calm);line-height:.9}
+  .d-count.soon .num{color:var(--now)} .d-count.today .num{color:var(--done)}
+  .d-count .word{color:var(--ink-soft);font-size:1.1em;margin-top:6px}
+  .sleeps{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px auto;max-width:520px}
+  .sleeps span{font-size:26px;opacity:.85}
+  .sleeps span.gone{opacity:.18}
+  .stampbtn{height:64px;padding:0 30px;border-radius:20px;background:var(--now);color:#fff;font-weight:700;box-shadow:var(--shadow);margin:8px auto 20px;display:inline-flex;align-items:center;gap:10px}
+  .stampbtn.disabled{background:var(--line);color:var(--ink-soft)}
+
+  .cal{max-width:680px;margin:0 auto}
+  .cal .month{margin-bottom:26px}
+  .cal .m-title{font-weight:800;margin:0 0 10px;color:var(--calm);font-size:1.15em;text-align:left}
+  .cal .wd,.cal .days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .cal .wd div{font-size:.78em;color:var(--ink-soft);text-align:center;font-weight:700;padding-bottom:4px}
+  .cal .day{aspect-ratio:1;background:var(--surface);border-radius:16px;display:grid;place-items:center;position:relative;font-weight:700;font-size:1.15em;box-shadow:var(--shadow)}
+  .cal .day.pad{visibility:hidden;box-shadow:none;background:transparent}
+  /* marked: crossed off with a CSS-drawn X (renders the same on every device);
+     the day number stays visible under the stroke, like pen on paper */
+  .cal .day.marked::before,.cal .day.marked::after{
+    content:"";position:absolute;left:50%;top:50%;width:72%;height:5px;border-radius:3px;
+    background:var(--ink);transform:translate(-50%,-50%) rotate(45deg)}
+  .cal .day.marked::after{transform:translate(-50%,-50%) rotate(-45deg)}
+  .cal .day.today{background:var(--now);color:#fff;box-shadow:0 0 0 5px rgba(230,165,76,.32)}
+  .cal .day.today.marked::before,.cal .day.today.marked::after{background:#fff}
+  .cal .day.event{background:var(--calm);color:#fff}
+  .cal .day.event .evp{position:absolute;inset:10%;display:grid;place-items:center;font-size:1.5em;overflow:hidden}
+  .cal .day.event .evp img{width:100%;height:100%;object-fit:contain}
+  .cal .day.event .evn{position:absolute;top:3px;left:6px;font-size:.65em}
+
+  @media (min-width:720px){.card .pic{width:120px;height:120px;flex-basis:120px;font-size:64px}.card .label{font-size:1.45em}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="title">Visual <span>Routine</span></div>
+    <div class="header-btns">
+      <button class="icon-btn" id="helpBtn" title="How to use">?</button>
+      <button class="icon-btn lang" id="langBtn" title="Child language">PT</button>
+      <button class="icon-btn" id="lockBtn" title="Child lock">🔒</button>
+      <button class="icon-btn" id="editBtn" title="Edit">✏️</button>
+    </div>
+  </header>
+
+  <div class="install" id="installBanner">
+    <div class="txt" id="installText">Install this app on your tablet.</div>
+    <button class="go" id="installBtn">Install</button>
+    <button class="x" id="installClose">✕</button>
+  </div>
+
+  <main>
+    <!-- ROUTINE -->
+    <section class="view on" id="view-routine">
+      <div class="progress" id="progress"></div>
+      <div class="day-wrap">
+        <div class="rail" id="rail">
+          <div class="rail-end">☀️</div>
+          <div class="rail-track" id="railTrack">
+            <div class="rail-passed" id="railPassed"></div>
+            <div class="rail-now" id="railNow"></div>
+          </div>
+          <div class="rail-end">🌙</div>
+        </div>
+        <div class="list" id="routine" style="flex:1;min-width:0"></div>
+      </div>
+      <div class="addbar">
+        <button class="addbtn secondary" id="openLibraryBtn">☆ &nbsp;Library</button>
+        <button class="addbtn" id="addActivityBtn">＋ &nbsp;Add activity</button>
+      </div>
+    </section>
+
+    <!-- COUNTDOWN -->
+    <section class="view" id="view-countdown">
+      <div class="list" id="events"></div>
+      <div class="addbar"><button class="addbtn" id="addEventBtn">＋ &nbsp;Add special day</button></div>
+    </section>
+
+    <!-- TALK (AAC board) -->
+    <section class="view" id="view-talk">
+      <div class="strip-wrap">
+        <div class="strip" id="strip"></div>
+        <div class="strip-actions">
+          <button class="sa play" id="sayBtn" aria-label="Speak">▶</button>
+          <button class="sa trans" id="transBtn" aria-label="Translate">SV</button>
+          <button class="sa clear" id="clearBtn" aria-label="Clear">🗑️</button>
+        </div>
+      </div>
+      <div class="transbar" id="transbar"></div>
+      <div class="cats" id="cats"></div>
+      <div class="board" id="board"></div>
+      <div class="addbar"><button class="addbtn" id="addWordBtn">＋ &nbsp;Add word</button></div>
+    </section>
+  </main>
+</div>
+
+<!-- bottom tabs -->
+<nav class="tabs">
+  <button data-tab="routine" class="on"><span class="ic">🗓️</span><span id="tabRoutineLbl">Routine</span></button>
+  <button data-tab="countdown"><span class="ic">⭐</span><span id="tabCountdownLbl">Countdown</span></button>
+  <button data-tab="talk"><span class="ic">💬</span><span id="tabTalkLbl">Talk</span></button>
+</nav>
+
+<!-- Editor sheet (shared: activity | event) -->
+<div class="scrim" id="sheet">
+  <div class="sheet">
+    <h2 id="sheetTitle">Add</h2>
+    <div class="row" style="align-items:flex-end">
+      <div class="preview-pic" id="previewPic"><span>🖼️</span></div>
+      <div class="field" style="flex:1">
+        <label>Name (any language)</label>
+        <input id="labelInput" placeholder="e.g. Breakfast" autocomplete="off" />
+      </div>
+      <div class="field" id="minutesField" style="flex:0 0 110px">
+        <label>Minutes</label>
+        <input id="minutesInput" type="number" min="1" max="90" value="10" inputmode="numeric" />
+      </div>
+      <div class="field" id="dateField" style="flex:0 0 170px;display:none">
+        <label>Date</label>
+        <input id="dateInput" type="date" />
+      </div>
+      <div class="field" id="timeField" style="flex:0 0 150px;display:none">
+        <label>Time</label>
+        <input id="timeInput" type="time" />
+      </div>
+    </div>
+    <div class="seg" id="typeSeg" style="display:none">
+      <button data-type="timer" class="on">⏱ Timer</button>
+      <button data-type="check">✓ Simple</button>
+      <button data-type="clock">🕐 Time</button>
+    </div>
+    <div class="row" id="wordFields" style="display:none">
+      <div class="field"><label>Svenska (SV)</label><input id="svInput" placeholder="e.g. äta" autocomplete="off" /></div>
+      <div class="field"><label>English (EN)</label><input id="enInput" placeholder="e.g. eat" autocomplete="off" /></div>
+      <div class="field" style="flex:0 0 150px"><label>Category</label>
+        <select id="catSel"></select>
+      </div>
+    </div>
+
+    <div class="seg" id="sourceSeg">
+      <button data-src="arasaac" class="on">🔎 Pictogram</button>
+      <button data-src="photo">📷 Photo</button>
+      <button data-src="emoji">😀 Emoji</button>
+    </div>
+
+    <div class="picsource" id="src-arasaac">
+      <div class="searchrow">
+        <select id="localeSel">
+          <option value="pt">PT</option><option value="en">EN</option>
+          <option value="sv">SV</option><option value="es">ES</option>
+        </select>
+        <input id="searchInput" placeholder="Search a word…" autocomplete="off" />
+        <button id="searchBtn">🔎</button>
+      </div>
+      <div class="grid" id="searchGrid"></div>
+      <div class="hint" id="searchHint">Pictograms by ARASAAC (Sergio Palao · Gob. de Aragón · CC BY-NC-SA)</div>
+    </div>
+    <div class="picsource" id="src-photo" style="display:none">
+      <input type="file" id="photoInput" accept="image/*" capture="environment" style="width:100%;padding:14px;background:var(--surface);border:2px dashed var(--line);border-radius:16px" />
+      <div class="hint">Use a real photo of the child's own object, place or person.</div>
+    </div>
+    <div class="picsource" id="src-emoji" style="display:none"><div class="emojis" id="emojiGrid"></div></div>
+
+    <label class="favchk" id="favField"><input type="checkbox" id="favChk" /> <span>★ Also save to Library (favorite)</span></label>
+    <div class="sheet-actions">
+      <button class="btn-ghost" id="cancelBtn">Cancel</button>
+      <button class="btn-primary" id="saveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Library sheet -->
+<div class="scrim" id="library">
+  <div class="sheet">
+    <h2 id="libraryTitle">Library</h2>
+    <div class="lib-grid" id="libGrid"></div>
+    <div class="hint" id="libHint">Tap a favorite to preview, then add it to today's routine.</div>
+    <div class="sheet-actions"><button class="btn-ghost" id="libClose">Close</button></div>
+  </div>
+</div>
+
+<!-- Favorite preview / confirm sheet -->
+<div class="scrim" id="favPreview">
+  <div class="sheet">
+    <h2>Add to routine?</h2>
+    <div class="fav-preview">
+      <div class="preview-pic" id="fpPic"><span>🖼️</span></div>
+      <div><div class="fp-name" id="fpName"></div><div class="sub" id="fpMin">⏱️ 10 min</div></div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn-ghost" id="fpCancel">Cancel</button>
+      <button class="btn-primary" id="fpConfirm">＋ Add to routine</button>
+    </div>
+  </div>
+</div>
+
+<!-- Day-line overlay (clock activities) -->
+<div class="dayline" id="dayline">
+  <div class="dl-label" id="dlLabel"></div>
+  <div class="dl-time" id="dlTime">--:--</div>
+  <div class="dl-track-wrap">
+    <div class="dl-end">☀️</div>
+    <div class="dl-track" id="dlTrack">
+      <div class="dl-passed" id="dlPassed"></div>
+      <div class="dl-event" id="dlEvent"></div>
+      <div class="dl-now" id="dlNow"></div>
+    </div>
+    <div class="dl-end">🌙</div>
+  </div>
+  <div class="dl-msg" id="dlMsg"></div>
+  <div class="dl-actions">
+    <button class="t-btn stop" id="dlClose">✕</button>
+    <button class="t-btn done" id="dlDone">✓ Done</button>
+  </div>
+</div>
+
+<!-- Help / how-to overlay -->
+<div class="help" id="help">
+  <header>
+    <div class="title">?&nbsp; <span id="helpTitle">How to use</span></div>
+    <button class="icon-btn" id="helpClose">✕</button>
+  </header>
+  <div class="help-body" id="helpBody"></div>
+  <button class="help-got" id="helpGot">👍</button>
+</div>
+
+<!-- Timer overlay -->
+<div class="timer" id="timer">
+  <div class="t-label" id="tLabel">Activity</div>
+  <div class="disc-wrap"><div class="disc" id="disc" style="--pct:100"></div><div class="disc-center" id="discCenter"></div></div>
+  <div class="t-done-badge">✓</div>
+  <div class="t-time" id="tTime">10:00</div>
+  <div class="t-actions">
+    <button class="t-btn stop" id="tStop">✕ Stop</button>
+    <button class="t-btn talk" id="tTalk" aria-label="Open talk board">💬</button>
+    <button class="t-btn done" id="tDone">✓ Done</button>
+  </div>
+</div>
+
+<!-- floating mini-timer -->
+<div class="mini-timer" id="miniTimer">
+  <div class="mini-disc" id="miniDisc" style="--pct:100"></div>
+  <div class="mini-center" id="miniCenter"></div>
+</div>
+
+<!-- Countdown detail overlay -->
+<div class="detail" id="detail">
+  <header>
+    <button class="icon-btn" id="detailBack">←</button>
+  </header>
+  <div class="body">
+    <div class="d-pic" id="dPic"></div>
+    <div class="d-name" id="dName"></div>
+    <div class="d-count" id="dCount"><div class="num" id="dNum">0</div><div class="word" id="dWord"></div></div>
+    <div class="sleeps" id="dSleeps"></div>
+    <button class="stampbtn" id="stampBtn">✋ Mark today</button>
+    <div class="cal" id="dCal"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ---------------- config ---------------- */
+const ARASAAC_API = "https://api.arasaac.org/api/pictograms";
+const ARASAAC_IMG = id => `https://static.arasaac.org/pictograms/${id}/${id}_300.png`;
+const MS = 86400000;
+
+/* child-facing strings (only these are translated; admin UI stays English) */
+const STR = {
+  pt:{ toGo:"Faltam", one:"Falta", days:"dias", day:"dia", today:"É hoje! 🎉", passed:"Já passou", stamp:"Marcar hoje",
+       tabRoutine:"Rotina", tabCountdown:"Contagem", tabTalk:"Falar", catsAll:"Todas", soon:"Quase!", itsTime:"Chegou a hora! 🎉",
+       cats:{social:"Social",people:"Pessoas",actions:"Ações",feel:"Sentimentos",food:"Comida",places:"Lugares",things:"Coisas"},
+       wd:["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"],
+       mo:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"] },
+  sv:{ toGo:"", one:"", days:"dagar", day:"dag", today:"Idag! 🎉", passed:"Passerat", stamp:"Markera idag",
+       tabRoutine:"Rutin", tabCountdown:"Nedräkning", tabTalk:"Prata", catsAll:"Alla", soon:"Snart!", itsTime:"Nu är det dags! 🎉",
+       cats:{social:"Socialt",people:"Personer",actions:"Handlingar",feel:"Känslor",food:"Mat",places:"Platser",things:"Saker"},
+       wd:["Mån","Tis","Ons","Tor","Fre","Lör","Sön"],
+       mo:["Januari","Februari","Mars","April","Maj","Juni","Juli","Augusti","September","Oktober","November","December"] },
+  en:{ toGo:"", one:"", days:"days", day:"day", today:"Today! 🎉", passed:"Passed", stamp:"Mark today",
+       tabRoutine:"Routine", tabCountdown:"Countdown", tabTalk:"Talk", catsAll:"All", soon:"Almost!", itsTime:"It's time! 🎉",
+       cats:{social:"Social",people:"People",actions:"Actions",feel:"Feelings",food:"Food",places:"Places",things:"Things"},
+       wd:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+       mo:["January","February","March","April","May","June","July","August","September","October","November","December"] }
+};
+const LANGS = ["pt","en","sv"];
+
+/* ---------------- storage (guarded) ---------------- */
+const STORE_KEY = "visual-routine-v2";
+let memoryFallback = null;
+function loadState(){
+  try{ const raw=localStorage.getItem(STORE_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return memoryFallback;
+}
+function saveState(){
+  memoryFallback = state;
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+}
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+function seed(){
+  return {
+    settings:{ lang:"pt" },
+    activities:[
+      { id:uid(), label:"Wake up",    src:"emoji", img:"🛏️", minutes:5,  done:false },
+      { id:uid(), label:"Breakfast",  src:"emoji", img:"🥣", minutes:15, done:false },
+      { id:uid(), label:"Brush teeth",src:"emoji", img:"🪥", minutes:3,  done:false },
+      { id:uid(), label:"Play",       src:"emoji", img:"🧸", minutes:20, done:false },
+      { id:uid(), label:"Bath",       src:"emoji", img:"🛁", minutes:10, done:false }
+    ],
+    events:[],
+    favorites:[],
+    aacCards:[],
+    aacPics:{},
+    aacPicsQ:{},
+    aacHidden:[]
+  };
+}
+let state = loadState() || seed();
+if(!state.settings) state.settings={lang:"pt"};
+if(!state.events) state.events=[];
+if(!state.favorites) state.favorites=[];
+if(!state.aacCards) state.aacCards=[];
+if(!state.aacPics) state.aacPics={};
+if(!state.aacPicsQ) state.aacPicsQ={};
+if(!state.aacHidden) state.aacHidden=[];
+
+/* ---------------- date helpers ---------------- */
+function isoOf(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function todayISO(){ return isoOf(new Date()); }
+function parseISO(s){ const [y,m,dd]=s.split("-").map(Number); return new Date(y,m-1,dd); }
+function daysUntil(iso){ return Math.round((parseISO(iso) - parseISO(todayISO()))/MS); }
+function mondayCol(d){ return (d.getDay()+6)%7; } // 0=Mon .. 6=Sun
+function minsToTime(hhmm){
+  if(!hhmm) return null;
+  const [h,m]=hhmm.split(":").map(Number); if(isNaN(h)) return null;
+  const now=new Date();
+  return (h*60+m) - (now.getHours()*60+now.getMinutes());
+}
+function clockEmoji(d){ const h=d.getHours()%12; return String.fromCodePoint(0x1F550 + ((h+11)%12)); }
+setInterval(()=>{ if((state.activities||[]).some(a=>(a.type==="clock")&&!a.done)) renderRoutine(); },60000);
+
+/* ---------------- shorthand ---------------- */
+const $ = s => document.querySelector(s);
+function escapeHtml(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function T(){ return STR[state.settings.lang] || STR.pt; }
+
+/* ---------------- language / lock / edit ---------------- */
+const langBtn=$("#langBtn"), lockBtn=$("#lockBtn"), editBtn=$("#editBtn");
+function applyLang(){
+  langBtn.textContent = state.settings.lang.toUpperCase();
+  $("#tabRoutineLbl").textContent = T().tabRoutine;
+  $("#tabCountdownLbl").textContent = T().tabCountdown;
+  $("#tabTalkLbl").textContent = T().tabTalk;
+  renderAll();
+}
+langBtn.addEventListener("click",()=>{
+  const i=LANGS.indexOf(state.settings.lang); state.settings.lang=LANGS[(i+1)%LANGS.length];
+  saveState(); applyLang();
+});
+editBtn.addEventListener("click",()=>{ document.body.classList.toggle("editing"); editBtn.classList.toggle("active"); renderCats(); renderBoard(); });
+lockBtn.addEventListener("click",()=>{
+  const locked=document.body.classList.toggle("locked");
+  lockBtn.textContent=locked?"🔓":"🔒"; editBtn.style.display=locked?"none":"";
+  if(locked){ document.body.classList.remove("editing"); editBtn.classList.remove("active"); }
+});
+let lockTimer=null;
+lockBtn.addEventListener("pointerdown",()=>{ if(!document.body.classList.contains("locked"))return;
+  lockTimer=setTimeout(()=>{ document.body.classList.remove("locked"); lockBtn.textContent="🔒"; editBtn.style.display=""; },900); });
+["pointerup","pointerleave","pointercancel"].forEach(ev=>lockBtn.addEventListener(ev,()=>clearTimeout(lockTimer)));
+
+/* ---------------- tabs ---------------- */
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+  const tab=b.dataset.tab;
+  $("#view-routine").classList.toggle("on",tab==="routine");
+  $("#view-countdown").classList.toggle("on",tab==="countdown");
+  $("#view-talk").classList.toggle("on",tab==="talk");
+  if(tab==="talk") fetchCorePics();
+}));
+
+/* ============================================================
+   ROUTINE
+============================================================ */
+const routineEl=$("#routine"), progressEl=$("#progress");
+function picMarkup(a){ return a.src==="emoji" ? `<span>${a.img||"🖼️"}</span>`
+  : `<img alt="" src="${a.img}" onerror="this.replaceWith(document.createTextNode('🖼️'))">`; }
+function currentIndex(){ return state.activities.findIndex(a=>!a.done); }
+function renderRail(){
+  const track=$("#railTrack"); if(!track) return;
+  // bounds: 06:00-21:00, stretched to include any scheduled activity
+  let start=6*60, end=21*60;
+  const clocks=(state.activities||[]).filter(a=>(a.type==="clock")&&a.time);
+  clocks.forEach(a=>{ const [h,m]=a.time.split(":").map(Number);
+    if(!isNaN(h)){ const t=h*60+m; start=Math.min(start,Math.max(0,t-60)); end=Math.max(end,Math.min(24*60,t+60)); } });
+  const now=new Date(); const nowMin=now.getHours()*60+now.getMinutes();
+  const pct=v=>Math.max(0,Math.min(100,(v-start)/(end-start)*100));
+  $("#railPassed").style.height=pct(nowMin)+"%";
+  $("#railNow").style.top=pct(nowMin)+"%";
+  $("#railNow").textContent=clockEmoji(now);
+  // rebuild markers
+  [...track.querySelectorAll(".rail-mark")].forEach(el=>el.remove());
+  clocks.forEach(a=>{
+    const [h,m]=a.time.split(":").map(Number); if(isNaN(h)) return;
+    const t=h*60+m; const remain=minsToTime(a.time);
+    const el=document.createElement("div");
+    el.className="rail-mark"+(a.done?" done":(remain!==null&&remain<=10&&remain>=0?" soon":""));
+    el.style.top=pct(t)+"%";
+    el.innerHTML = a.src==="emoji"?`<span>${a.img}</span>`:`<img alt="" src="${a.img}">`;
+    el.addEventListener("click",()=>openDayline(a));
+    track.appendChild(el);
+  });
+}
+function renderRoutine(){
+  renderRail();
+  const cur=currentIndex(); routineEl.innerHTML="";
+  if(!state.activities.length){ routineEl.innerHTML=`<div class="empty"><div class="big">🗓️</div>No activities yet.<br>Tap ✏️, then “Add activity”.</div>`; }
+  state.activities.forEach((a,i)=>{
+    const card=document.createElement("div");
+    const type=a.type||"timer";
+    const soon = type==="clock" && !a.done && minsToTime(a.time)!==null && minsToTime(a.time)<=10 && minsToTime(a.time)>=0;
+    card.className="card"+(a.done?" done":"")+(i===cur?" now":"")+(soon?" soon":"");
+    const sub = type==="timer" ? `⏱️ ${a.minutes} min` : (type==="clock" ? `🕐 ${a.time||"--:--"}${soon?` · <b>${T().soon}</b>`:""}` : "");
+    const goIcon = a.done ? "↺" : (type==="timer" ? "▶" : (type==="clock" ? "🕐" : "✓"));
+    card.innerHTML=`
+      <div class="pic">${picMarkup(a)}</div>
+      <div class="meta"><div class="label">${escapeHtml(a.label||"Activity")}</div><div class="sub">${sub}</div></div>
+      <button class="go t-${type}" aria-label="Start">${goIcon}</button>
+      <div class="edit-tools"><button class="mini up">▲</button><button class="mini down">▼</button><button class="mini del">🗑️</button></div>
+      <div class="check">✓</div>`;
+    card.querySelector(".go").addEventListener("click",()=>{
+      if(a.done){ a.done=false; saveState(); renderRoutine(); return; } // undo accidental "done"
+      if(type==="timer") startTimer(a);
+      else if(type==="clock") openDayline(a);
+      else { a.done=true; saveState(); renderRoutine(); }
+    });
+    card.querySelector(".up").addEventListener("click",()=>moveA(i,-1));
+    card.querySelector(".down").addEventListener("click",()=>moveA(i,1));
+    card.querySelector(".del").addEventListener("click",()=>{state.activities.splice(i,1);saveState();renderRoutine();});
+    const openEdit=()=>{ if(document.body.classList.contains("editing")) openSheet("activity",i); };
+    card.querySelector(".meta").addEventListener("click",openEdit);
+    card.querySelector(".pic").addEventListener("click",openEdit);
+    routineEl.appendChild(card);
+  });
+  progressEl.innerHTML="";
+  state.activities.forEach((a,i)=>{ const d=document.createElement("div");
+    d.className="dot"+(a.done?" done":(i===cur?" now":"")); progressEl.appendChild(d); });
+}
+function moveA(i,dir){ const j=i+dir; if(j<0||j>=state.activities.length)return;
+  const a=state.activities;[a[i],a[j]]=[a[j],a[i]];saveState();renderRoutine(); }
+
+/* ============================================================
+   COUNTDOWN (events)
+============================================================ */
+const eventsEl=$("#events");
+function renderEvents(){
+  eventsEl.innerHTML="";
+  if(!state.events.length){ eventsEl.innerHTML=`<div class="empty"><div class="big">⭐</div>No special days yet.<br>Tap ✏️, then “Add special day”.</div>`; }
+  // sort by soonest
+  const sorted=[...state.events].sort((x,y)=>parseISO(x.date)-parseISO(y.date));
+  sorted.forEach(ev=>{
+    const i=state.events.indexOf(ev);
+    const rem=daysUntil(ev.date);
+    const card=document.createElement("div"); card.className="card";
+    const cls = rem<=0 ? "today" : (rem<=3 ? "soon" : "");
+    const badge = rem>0 ? `<b>${rem}</b><small>${rem===1?T().day:T().days}</small>` : (rem===0?`<b>🎉</b>`:`<b>·</b><small>${T().passed}</small>`);
+    card.innerHTML=`
+      <div class="pic">${picMarkup(ev)}</div>
+      <div class="meta"><div class="label">${escapeHtml(ev.name||"Special day")}</div><div class="sub">📅 ${ev.date}</div></div>
+      <div class="count ${cls}">${badge}</div>
+      <div class="edit-tools"><button class="mini ed">✏️</button><button class="mini del">🗑️</button></div>`;
+    card.querySelector(".pic").addEventListener("click",()=>document.body.classList.contains("editing")?openSheet("event",i):openDetail(ev));
+    card.querySelector(".meta").addEventListener("click",()=>document.body.classList.contains("editing")?openSheet("event",i):openDetail(ev));
+    card.querySelector(".count").addEventListener("click",()=>openDetail(ev));
+    card.querySelector(".ed").addEventListener("click",()=>openSheet("event",i));
+    card.querySelector(".del").addEventListener("click",()=>{state.events.splice(i,1);saveState();renderEvents();});
+    eventsEl.appendChild(card);
+  });
+}
+
+/* ---- detail overlay ---- */
+const detail=$("#detail");
+let detailEvent=null;
+function openDetail(ev){ detailEvent=ev; renderDetail(); detail.classList.add("open"); }
+$("#detailBack").addEventListener("click",()=>{ detail.classList.remove("open"); detailEvent=null; });
+$("#stampBtn").addEventListener("click",()=>{
+  if(!detailEvent)return; const t=todayISO();
+  detailEvent.marked=detailEvent.marked||[];
+  if(!detailEvent.marked.includes(t)) detailEvent.marked.push(t);
+  saveState(); renderDetail(); renderEvents();
+});
+function renderDetail(){
+  const ev=detailEvent; if(!ev)return;
+  $("#dPic").innerHTML = ev.src==="emoji"?`<span>${ev.img}</span>`:`<img alt="" src="${ev.img}">`;
+  $("#dName").textContent = ev.name||"";
+  const rem=daysUntil(ev.date);
+  const dc=$("#dCount"); dc.className="d-count"+(rem<=0?" today":(rem<=3?" soon":""));
+  if(rem>0){ $("#dNum").textContent=rem; $("#dNum").style.display="";
+    $("#dWord").textContent = `${(rem===1?T().one:T().toGo)} ${rem===1?T().day:T().days}`.trim(); }
+  else if(rem===0){ $("#dNum").style.display="none"; $("#dWord").textContent=T().today; }
+  else { $("#dNum").style.display="none"; $("#dWord").textContent=T().passed; }
+  // sleeps row (nights left)
+  const sl=$("#dSleeps"); sl.innerHTML="";
+  const n=Math.max(0,Math.min(rem,60));
+  for(let i=0;i<n;i++){ const s=document.createElement("span"); s.textContent="🌙"; sl.appendChild(s); }
+  // stamp button state
+  const stamped=(ev.marked||[]).includes(todayISO());
+  const sb=$("#stampBtn"); sb.textContent = "✋ "+T().stamp;
+  sb.classList.toggle("disabled", stamped || rem<0);
+  sb.style.display = rem<0 ? "none" : "";
+  renderCalendar(ev);
+}
+function renderCalendar(ev){
+  const wrap=$("#dCal"); wrap.innerHTML="";
+  const today=parseISO(todayISO()), target=parseISO(ev.date);
+  const marked=new Set(ev.marked||[]);
+  // anchor: the day the countdown STARTED — fixed, so the X trail never disappears.
+  // (older events had no start: fall back to their earliest marked day, else today)
+  let startISO = ev.start;
+  if(!startISO){
+    const ms=(ev.marked||[]).slice().sort();
+    startISO = ms.length ? ms[0] : todayISO();
+    ev.start = startISO; saveState(); // heal old events so it sticks
+  }
+  let start=parseISO(startISO);
+  if(start>today) start=today;          // safety
+  if(target<start) return;              // nothing to show
+  let cur=new Date(start.getFullYear(),start.getMonth(),1);
+  const endMonth=new Date(target.getFullYear(),target.getMonth(),1);
+  while(cur<=endMonth){
+    const y=cur.getFullYear(), m=cur.getMonth();
+    const isFirstMonth=(y===start.getFullYear() && m===start.getMonth());
+    const isLastMonth=(y===target.getFullYear() && m===target.getMonth());
+    const fromDay=isFirstMonth?start.getDate():1;
+    const toDay=isLastMonth?target.getDate():new Date(y,m+1,0).getDate();
+    const month=document.createElement("div"); month.className="month";
+    month.innerHTML=`<div class="m-title">${T().mo[m]} ${y}</div>
+      <div class="wd">${T().wd.map(w=>`<div>${w}</div>`).join("")}</div>`;
+    const days=document.createElement("div"); days.className="days";
+    const lead=mondayCol(new Date(y,m,fromDay));
+    for(let i=0;i<lead;i++){ const e=document.createElement("div"); e.className="day pad"; days.appendChild(e); }
+    for(let d=fromDay;d<=toDay;d++){
+      const iso=isoOf(new Date(y,m,d));
+      const el=document.createElement("div"); el.className="day"; el.textContent=d;
+      if(iso===ev.date){
+        el.className="day event";
+        el.innerHTML=`<span class="evn">${d}</span><span class="evp">${ev.src==="emoji"?ev.img:`<img alt="" src="${ev.img}">`}</span>`;
+      }else if(iso===todayISO()){
+        el.className="day today"+(marked.has(iso)?" marked":"");
+        el.addEventListener("click",()=>{ marked.add(iso); ev.marked=[...marked]; saveState(); renderDetail(); renderEvents(); });
+      }else if(marked.has(iso)){
+        el.className="day marked";      // past day she crossed off -> keep the X
+      }
+      // past unmarked days just show the plain number (part of the path)
+      days.appendChild(el);
+    }
+    month.appendChild(days); wrap.appendChild(month);
+    cur=new Date(y,m+1,1);
+  }
+}
+
+/* ============================================================
+   EDITOR SHEET (activity | event)
+============================================================ */
+const sheet=$("#sheet"), sheetTitle=$("#sheetTitle");
+const labelInput=$("#labelInput"), minutesInput=$("#minutesInput"), dateInput=$("#dateInput"), previewPic=$("#previewPic");
+let editMode="activity", editingIndex=-1, draft={src:"arasaac",img:null}, actType="timer";
+function setActType(t){
+  actType=t;
+  [...$("#typeSeg").children].forEach(b=>b.classList.toggle("on",b.dataset.type===t));
+  $("#minutesField").style.display = t==="timer"?"":"none";
+  $("#timeField").style.display    = t==="clock"?"":"none";
+}
+document.addEventListener("DOMContentLoaded",()=>{});
+const EMOJIS=["🛏️","🥣","🍎","🪥","👕","🚽","🛁","🧸","📚","✏️","🚗","✈️","🏖️","🎂","🎁","🎄","🏫","🎨","⚽","🧩","🎵","🍽️","💤","🚿","☀️","🌙","👟","🍌","🥛","🖥️"];
+
+function openSheet(mode,index){
+  editMode=mode; editingIndex=(typeof index==="number")?index:-1;
+  $("#typeSeg").style.display     = mode==="activity"?"flex":"none";
+  $("#dateField").style.display    = mode==="event"?"":"none";
+  $("#favField").style.display     = mode==="activity"?"flex":"none";
+  $("#wordFields").style.display   = mode==="word"?"flex":"none";
+  $("#favChk").checked = false;
+  if(mode!=="activity"){ $("#minutesField").style.display="none"; $("#timeField").style.display="none"; }
+  if(mode==="word"){
+    const sel=$("#catSel");
+    if(!sel.options.length) CAT_ORDER.forEach(c=>{ const o=document.createElement("option"); o.value=c; o.textContent=T().cats[c]; sel.appendChild(o); });
+  }
+  if(editingIndex>=0){
+    const it = mode==="activity"?state.activities[editingIndex]:(mode==="event"?state.events[editingIndex]:state.aacCards[editingIndex]);
+    sheetTitle.textContent = mode==="activity"?"Edit activity":(mode==="event"?"Edit special day":"Edit word");
+    labelInput.value = mode==="activity"?it.label:(mode==="event"?it.name:(it.labels&&it.labels.pt)||"");
+    if(mode==="activity"){ minutesInput.value=it.minutes||10; $("#timeInput").value=it.time||""; setActType(it.type||"timer"); }
+    if(mode==="event") dateInput.value=it.date;
+    if(mode==="word"){ $("#svInput").value=(it.labels&&it.labels.sv)||""; $("#enInput").value=(it.labels&&it.labels.en)||""; $("#catSel").value=it.cat||"things"; }
+    draft={src:it.src,img:it.img};
+  }else{
+    sheetTitle.textContent = mode==="activity"?"Add activity":(mode==="event"?"Add special day":"Add word");
+    labelInput.value=""; minutesInput.value=10;
+    dateInput.value=""; $("#timeInput").value=""; $("#svInput").value=""; $("#enInput").value="";
+    draft={src:"emoji",img:null};
+    if(mode==="activity") setActType("timer");
+  }
+  labelInput.placeholder = mode==="activity"?"e.g. Breakfast":(mode==="event"?"e.g. Trip to grandma":"Português, ex.: bolo");
+  setSource(draft.src||"arasaac"); updatePreview();
+  $("#searchGrid").innerHTML=""; $("#searchInput").value=""; buildEmojiGrid();
+  sheet.classList.add("open");
+}
+function closeSheet(){ sheet.classList.remove("open"); coreReplaceId=null; }
+$("#addActivityBtn").addEventListener("click",()=>openSheet("activity"));
+$("#addEventBtn").addEventListener("click",()=>openSheet("event"));
+$("#cancelBtn").addEventListener("click",closeSheet);
+sheet.addEventListener("click",e=>{ if(e.target===sheet) closeSheet(); });
+
+$("#sourceSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setSource(b.dataset.src); });
+$("#typeSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setActType(b.dataset.type); });
+function setSource(src){ draft.src=src;
+  [...$("#sourceSeg").children].forEach(b=>b.classList.toggle("on",b.dataset.src===src));
+  $("#src-arasaac").style.display=src==="arasaac"?"":"none";
+  $("#src-photo").style.display=src==="photo"?"":"none";
+  $("#src-emoji").style.display=src==="emoji"?"":"none";
+}
+function updatePreview(){
+  if(draft.src==="emoji") previewPic.innerHTML=`<span>${draft.img||"😀"}</span>`;
+  else if(draft.img) previewPic.innerHTML=`<img alt="" src="${draft.img}">`;
+  else previewPic.innerHTML=`<span>🖼️</span>`;
+}
+function buildEmojiGrid(){ const g=$("#emojiGrid"); g.innerHTML="";
+  EMOJIS.forEach(e=>{ const b=document.createElement("button"); b.textContent=e;
+    if(draft.src==="emoji"&&draft.img===e) b.classList.add("sel");
+    b.addEventListener("click",()=>{ draft.src="emoji"; draft.img=e;
+      [...g.children].forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); updatePreview(); });
+    g.appendChild(b); });
+}
+$("#photoInput").addEventListener("change",e=>{ const f=e.target.files&&e.target.files[0]; if(!f)return;
+  const r=new FileReader(); r.onload=()=>{ draft.src="photo"; draft.img=r.result; updatePreview(); }; r.readAsDataURL(f); });
+function downscaleAsync(dataUrl,max=400){ return new Promise(res=>{ const img=new Image();
+  img.onload=()=>{ const scale=Math.min(1,max/Math.max(img.width,img.height));
+    const c=document.createElement("canvas"); c.width=img.width*scale; c.height=img.height*scale;
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    try{res(c.toDataURL("image/jpeg",0.8));}catch(e){res(dataUrl);} };
+  img.onerror=()=>res(dataUrl); img.src=dataUrl; }); }
+
+/* ARASAAC search */
+$("#searchBtn").addEventListener("click",doSearch);
+$("#searchInput").addEventListener("keydown",e=>{ if(e.key==="Enter") doSearch(); });
+async function doSearch(){
+  const q=$("#searchInput").value.trim(); if(!q)return;
+  const locale=$("#localeSel").value, grid=$("#searchGrid"), hint=$("#searchHint");
+  grid.innerHTML=""; hint.textContent="Searching…";
+  try{
+    const r=await fetch(`${ARASAAC_API}/${locale}/search/${encodeURIComponent(q)}`);
+    if(!r.ok) throw 0;
+    const data=await r.json();
+    if(!Array.isArray(data)||!data.length){ hint.textContent="No pictograms found. Try another word."; return; }
+    hint.textContent="Pictograms by ARASAAC · CC BY-NC-SA";
+    data.slice(0,24).forEach(p=>{ const id=p._id||p.id;
+      const t=document.createElement("div"); t.className="thumb";
+      t.innerHTML=`<img alt="" loading="lazy" src="${ARASAAC_IMG(id)}">`;
+      t.addEventListener("click",async()=>{
+        [...grid.children].forEach(x=>x.classList.remove("sel")); t.classList.add("sel");
+        hint.textContent="Loading picture…";
+        const dataUrl=await urlToDataUrl(ARASAAC_IMG(id));
+        draft.src="arasaac"; draft.img=dataUrl||ARASAAC_IMG(id); updatePreview();
+        if(!labelInput.value) labelInput.value=q; hint.textContent="Picture selected ✓";
+      });
+      grid.appendChild(t);
+    });
+  }catch(e){ hint.textContent="Search failed (offline?). Check connection and try again."; }
+}
+async function urlToDataUrl(url){ try{ const r=await fetch(url,{mode:"cors"}); const b=await r.blob();
+  return await new Promise(res=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=()=>res(null); fr.readAsDataURL(b); }); }
+  catch(e){ return null; } }
+
+/* save */
+$("#saveBtn").addEventListener("click",async()=>{
+  let img=draft.img, src=draft.src;
+  if(src==="photo"&&img&&img.startsWith("data:")) img=await downscaleAsync(img);
+  if(!img){ src="emoji"; img="🖼️"; }
+  if(editMode==="activity"){
+    const label=labelInput.value.trim()||"Activity";
+    const minutes=Math.max(1,Math.min(90,parseInt(minutesInput.value,10)||10));
+    const type=actType||"timer";
+    const time=$("#timeInput").value||"";
+    if(editingIndex>=0) Object.assign(state.activities[editingIndex],{label,minutes,src,img,type,time});
+    else state.activities.push({id:uid(),label,minutes,src,img,type,time,done:false});
+    if($("#favChk").checked) addFavorite({label,minutes,src,img,type,time});
+    renderRoutine();
+  }else if(editMode==="event"){
+    const name=labelInput.value.trim()||"Special day";
+    const date=dateInput.value||todayISO();
+    if(editingIndex>=0) Object.assign(state.events[editingIndex],{name,date,src,img});
+    else state.events.push({id:uid(),name,date,src,img,marked:[],start:todayISO()});
+    renderEvents();
+  }else{ // word
+    const pt=labelInput.value.trim()||"palavra";
+    const sv=$("#svInput").value.trim()||pt;
+    const en=$("#enInput").value.trim()||pt;
+    const cat=$("#catSel").value||"things";
+    const labels={pt,sv,en};
+    if(editingIndex>=0) Object.assign(state.aacCards[editingIndex],{labels,cat,src,img});
+    else state.aacCards.push({id:uid(),labels,cat,src,img});
+    if(coreReplaceId){ if(!state.aacHidden.includes(coreReplaceId)) state.aacHidden.push(coreReplaceId); coreReplaceId=null; }
+    renderCats(); renderBoard();
+  }
+  saveState(); closeSheet();
+});
+
+/* ============================================================
+   FAVORITES LIBRARY
+============================================================ */
+function addFavorite(f){
+  // de-dupe by label+minutes so the library stays clean
+  const key=(f.label||"").trim().toLowerCase()+"|"+f.minutes;
+  if(state.favorites.some(x=>((x.label||"").trim().toLowerCase()+"|"+x.minutes)===key)) return;
+  state.favorites.push({id:uid(),label:f.label,minutes:f.minutes,src:f.src,img:f.img,type:f.type||"timer",time:f.time||""});
+  saveState();
+}
+const library=$("#library"), favPreview=$("#favPreview");
+$("#openLibraryBtn").addEventListener("click",openLibrary);
+$("#libClose").addEventListener("click",()=>library.classList.remove("open"));
+library.addEventListener("click",e=>{ if(e.target===library) library.classList.remove("open"); });
+function libPic(f){ return f.src==="emoji"?`<span>${f.img||"🖼️"}</span>`:`<img alt="" src="${f.img}" onerror="this.replaceWith(document.createTextNode('🖼️'))">`; }
+function openLibrary(){
+  const g=$("#libGrid"); g.innerHTML="";
+  if(!state.favorites.length){ g.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="big">☆</div>No favorites yet.<br>When you add an activity, tick “Save to Library”.</div>`; }
+  state.favorites.forEach(f=>{
+    const c=document.createElement("div"); c.className="lib-card";
+    c.innerHTML=`<div class="lp">${libPic(f)}</div><div class="ln">${escapeHtml(f.label)}</div><div class="lm">⏱️ ${f.minutes} min</div><button class="lx" aria-label="Remove">✕</button>`;
+    c.addEventListener("click",e=>{ if(e.target.closest(".lx")) return; previewFavorite(f); });
+    c.querySelector(".lx").addEventListener("click",()=>{ state.favorites=state.favorites.filter(x=>x.id!==f.id); saveState(); openLibrary(); });
+    g.appendChild(c);
+  });
+  library.classList.add("open");
+}
+let pendingFav=null;
+function previewFavorite(f){
+  pendingFav=f;
+  $("#fpPic").innerHTML = f.src==="emoji"?`<span>${f.img}</span>`:`<img alt="" src="${f.img}">`;
+  $("#fpName").textContent=f.label;
+  $("#fpMin").textContent=`⏱️ ${f.minutes} min`;
+  favPreview.classList.add("open");
+}
+$("#fpCancel").addEventListener("click",()=>favPreview.classList.remove("open"));
+favPreview.addEventListener("click",e=>{ if(e.target===favPreview) favPreview.classList.remove("open"); });
+$("#fpConfirm").addEventListener("click",()=>{
+  if(pendingFav){
+    state.activities.push({id:uid(),label:pendingFav.label,minutes:pendingFav.minutes,src:pendingFav.src,img:pendingFav.img,type:pendingFav.type||"timer",time:pendingFav.time||"",done:false});
+    saveState(); renderRoutine();
+  }
+  favPreview.classList.remove("open");
+  // keep library open so parents can add several in a row
+});
+
+/* ============================================================
+   TALK — AAC board (multi-language)
+   Child builds a sentence, hears/confirms it in the native
+   language, THEN translates+speaks it for the teacher.
+============================================================ */
+const CORE_VOCAB=[
+ // cat, emoji(fallback), pt, sv, en, arasaacSearch(pt)
+ // --- priority core words first (flat board is direct: most-needed on top) ---
+ ["people","👧","eu","jag","I","yo"],
+ ["actions","🙋","quero","vill ha","want","desear"],
+ ["social","✅","sim","ja","yes","sí"],
+ ["social","❌","não","nej","no","no"],
+ ["actions","➕","mais","mer","more","más"],
+ ["actions","🏁","acabou","klart","finished","terminar"],
+ ["social","🆘","ajuda","hjälp","help","ayudar"],
+ ["actions","🚽","banheiro","toalett","toilet","inodoro"],
+ ["actions","🍽️","comer","äta","eat","comer"],
+ ["actions","🥤","beber","dricka","drink","beber"],
+ ["feel","🤕","dor","ont","pain","dolor"],
+ ["actions","🧸","brincar","leka","play","jugar"],
+ // --- people ---
+ ["people","🫵","você","du","you","tú"],
+ ["people","👩","mamãe","mamma","mom","mamá"],
+ ["people","👨","papai","pappa","dad","papá"],
+ ["people","👩‍🏫","professora","fröken","teacher","profesora"],
+ ["people","🧒","amigo","kompis","friend","amigo"],
+ // --- social ---
+ ["social","👋","olá","hej","hello","hola"],
+ ["social","👋🏽","tchau","hej då","bye","adiós"],
+ ["social","🙏","por favor","snälla","please","por favor"],
+ ["social","💚","obrigado","tack","thank you","gracias"],
+ // --- actions ---
+ ["actions","🚶","ir","gå","go","ir"],
+ ["actions","😴","dormir","sova","sleep","dormir"],
+ ["actions","✋","parar","stanna","stop","parar"],
+ // --- feelings ---
+ ["feel","😊","feliz","glad","happy","contento"],
+ ["feel","😢","triste","ledsen","sad","triste"],
+ ["feel","😠","bravo","arg","angry","enfadado"],
+ ["feel","🥱","cansado","trött","tired","cansado"],
+ ["feel","🤒","doente","sjuk","sick","enfermo"],
+ ["feel","😨","com medo","rädd","scared","miedo"],
+ // --- food ---
+ ["food","💧","água","vatten","water","agua"],
+ ["food","🥛","leite","mjölk","milk","leche"],
+ ["food","🧃","suco","saft","juice","zumo"],
+ ["food","🍞","pão","bröd","bread","pan"],
+ ["food","🍎","maçã","äpple","apple","manzana"],
+ ["food","🍌","banana","banan","banana","plátano"],
+ ["food","🍪","biscoito","kex","cookie","galleta"],
+ ["food","🍚","comida","mat","food","comida"],
+ // --- places ---
+ ["places","🏠","casa","hem","home","casa"],
+ ["places","🏫","escola","skola","school","colegio"],
+ ["places","🌳","parque","park","park","parque"],
+ ["places","🌤️","lá fora","ute","outside","fuera"],
+ // --- things ---
+ ["things","🧸","brinquedo","leksak","toy","juguete"],
+ ["things","📱","tablet","platta","tablet","tableta"],
+ ["things","📚","livro","bok","book","libro"],
+ ["things","⚽","bola","boll","ball","pelota"],
+ ["things","🎵","música","musik","music","música"],
+ ["things","🧩","quebra-cabeça","pussel","puzzle","puzzle"],
+].map((r,i)=>({id:"core"+i,cat:r[0],src:"emoji",img:r[1],labels:{pt:r[2],sv:r[3],en:r[4]},q:r[5],core:true}));
+
+const CAT_ORDER=["social","people","actions","feel","food","places","things"];
+const CAT_ICON={social:"👋",people:"👨‍👩‍👧",actions:"🏃",feel:"😊",food:"🍎",places:"🏠",things:"🧸"};
+let activeCat="all";
+let sentence=[]; // session-only
+
+function allWords(){ return CORE_VOCAB.filter(w=>!(state.aacHidden||[]).includes(w.id)).concat(state.aacCards||[]); }
+function wordLabel(w,lang){ const L=w.labels||{}; return L[lang]||L.pt||L.en||""; }
+function wordPic(w){
+  if(w.core && state.aacPics[w.id]) return `<img alt="" src="${state.aacPics[w.id]}">`;
+  return w.src==="emoji"?`<span>${w.img}</span>`:`<img alt="" src="${w.img}">`;
+}
+
+/* ---- speech ---- */
+const VOICE_LANG={pt:"pt-BR",sv:"sv-SE",en:"en-US"};
+function speak(text,lang){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang=VOICE_LANG[lang]||"pt-BR"; u.rate=0.85;
+    const v=(window.speechSynthesis.getVoices()||[]).find(v=>v.lang&&v.lang.toLowerCase().startsWith((VOICE_LANG[lang]||"").slice(0,2).toLowerCase()));
+    if(v) u.voice=v;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ---- board ---- */
+function renderCats(){
+  const c=$("#cats"); c.innerHTML="";
+  ["all"].concat(CAT_ORDER).forEach(cat=>{
+    const b=document.createElement("button");
+    b.innerHTML = cat==="all" ? `⠿ ${T().catsAll}` : `${CAT_ICON[cat]} ${T().cats[cat]}`;
+    b.classList.toggle("on",cat===activeCat);
+    b.addEventListener("click",()=>{ activeCat=cat; renderCats(); renderBoard(); });
+    c.appendChild(b);
+  });
+  if(document.body.classList.contains("editing") && (state.aacHidden||[]).length){
+    const r=document.createElement("button");
+    r.innerHTML=`↺ ${state.aacHidden.length}`;
+    r.title="Restore hidden words";
+    r.addEventListener("click",()=>{ state.aacHidden=[]; saveState(); renderCats(); renderBoard(); });
+    c.appendChild(r);
+  }
+}
+function renderBoard(){
+  const b=$("#board"); b.innerHTML="";
+  const lang=state.settings.lang;
+  allWords().filter(w=>activeCat==="all"||w.cat===activeCat).forEach(w=>{
+    const c=document.createElement("div");
+    c.className="wcard"+(w.core?"":" custom");
+    c.dataset.cat=w.cat;
+    c.innerHTML=`<div class="wp">${wordPic(w)}</div><div class="wl">${escapeHtml(wordLabel(w,lang))}</div><button class="lx" aria-label="Remove">✕</button>`;
+    c.addEventListener("click",e=>{
+      if(e.target.closest(".lx")) return;
+      if(document.body.classList.contains("editing")){
+        if(w.core) editCoreWord(w); else openSheet("word",state.aacCards.indexOf(w));
+        return;
+      }
+      sentence.push(w); renderStrip();
+      speak(wordLabel(w,lang),lang); // per-tap auditory feedback in native language
+    });
+    const x=c.querySelector(".lx");
+    x.addEventListener("click",()=>{
+      if(w.core){ if(!state.aacHidden.includes(w.id)) state.aacHidden.push(w.id); }
+      else state.aacCards=state.aacCards.filter(z=>z.id!==w.id);
+      saveState(); renderCats(); renderBoard();
+    });
+    b.appendChild(c);
+  });
+}
+function renderStrip(){
+  const s=$("#strip"); s.innerHTML="";
+  const lang=state.settings.lang;
+  sentence.forEach((w,i)=>{
+    const ch=document.createElement("div"); ch.className="chip";
+    ch.innerHTML=`<div class="cp">${wordPic(w)}</div><div class="cw">${escapeHtml(wordLabel(w,lang))}</div>`;
+    ch.addEventListener("click",()=>{ sentence.splice(i,1); renderStrip(); });
+    s.appendChild(ch);
+  });
+  $("#transbar").classList.remove("show");
+}
+function sentenceText(lang){ return sentence.map(w=>wordLabel(w,lang)).join(" "); }
+
+$("#sayBtn").addEventListener("click",()=>{ if(sentence.length) speak(sentenceText(state.settings.lang),state.settings.lang); });
+$("#clearBtn").addEventListener("click",()=>{ sentence=[]; renderStrip(); });
+$("#transBtn").addEventListener("click",()=>{
+  if(!sentence.length) return;
+  const from=state.settings.lang, to=(from==="sv")?"pt":"sv"; // native <-> Swedish
+  const tb=$("#transbar");
+  tb.innerHTML=`<div class="tb-src">${sentenceText(from)}</div><div>🗣️ ${escapeHtml(sentenceText(to))}</div>`;
+  tb.classList.add("show");
+  speak(sentenceText(to),to);
+});
+
+/* ---- ARASAAC pictograms for core words: fetch once, cache in the app ---- */
+let picsFetching=false;
+async function fetchCorePics(){
+  if(picsFetching) return; picsFetching=true;
+  const missing=CORE_VOCAB.filter(w=>!state.aacPics[w.id] || state.aacPicsQ[w.id]!==w.q);
+  let got=0;
+  for(const w of missing){
+    try{
+      const r=await fetch(`${ARASAAC_API}/es/search/${encodeURIComponent(w.q)}`);
+      if(!r.ok) continue;
+      const data=await r.json();
+      const id=data&&data[0]&&(data[0]._id||data[0].id);
+      if(!id) continue;
+      const dataUrl=await urlToDataUrl(ARASAAC_IMG(id));
+      if(dataUrl){ state.aacPics[w.id]=dataUrl; state.aacPicsQ[w.id]=w.q; got++; if(got%6===0){ saveState(); renderBoard(); renderStrip(); } }
+    }catch(e){ /* offline or blocked: emoji fallback stays */ }
+  }
+  if(got){ saveState(); renderBoard(); renderStrip(); }
+  picsFetching=false;
+}
+
+let coreReplaceId=null;
+function editCoreWord(w){
+  openSheet("word");
+  labelInput.value=(w.labels&&w.labels.pt)||"";
+  $("#svInput").value=(w.labels&&w.labels.sv)||"";
+  $("#enInput").value=(w.labels&&w.labels.en)||"";
+  $("#catSel").value=w.cat||"things";
+  const pic=state.aacPics[w.id];
+  draft = pic ? {src:"arasaac",img:pic} : {src:"emoji",img:w.img};
+  updatePreview();
+  $("#searchInput").value=w.q||"";
+  coreReplaceId=w.id;
+}
+/* ---- add-word button (parents) ---- */
+$("#addWordBtn").addEventListener("click",()=>openSheet("word"));
+
+/* ============================================================
+   HELP (illustrated, minimal text)
+============================================================ */
+const HELP = {
+  pt:{ title:"Como usar", steps:[
+    {n:"1", art:"✏️", cap:"Toque no lápis para montar."},
+    {n:"2", art:"➕", badge:"🖼️", cap:"Adicione uma atividade com figura."},
+    {n:"3", art:"☆", badge:"👆", cap:"Ou pegue um favorito na Biblioteca."},
+    {n:"4", art:"▶", cap:"A criança toca e o tempo aparece."},
+    {n:"5", art:"⏳", cap:"O círculo vai esvaziando."},
+    {n:"6", art:"✓", cap:"Terminou! Passa para a próxima."},
+    {n:"⭐", art:"📅", badge:"✕", cap:"Na aba estrela: marque os dias até a viagem."},
+    {n:"💬", art:"🗣️", badge:"🇸🇪", cap:"Na aba falar: monte a frase, ouça em português e traduza."},
+  ]},
+  en:{ title:"How to use", steps:[
+    {n:"1", art:"✏️", cap:"Tap the pencil to build."},
+    {n:"2", art:"➕", badge:"🖼️", cap:"Add an activity with a picture."},
+    {n:"3", art:"☆", badge:"👆", cap:"Or pick a favorite from the Library."},
+    {n:"4", art:"▶", cap:"The child taps and the time shows."},
+    {n:"5", art:"⏳", cap:"The circle empties as time passes."},
+    {n:"6", art:"✓", cap:"Done! Move to the next one."},
+    {n:"⭐", art:"📅", badge:"✕", cap:"Star tab: cross off days until the trip."},
+    {n:"💬", art:"🗣️", badge:"🇸🇪", cap:"Talk tab: build the sentence, hear it, then translate."},
+  ]},
+  sv:{ title:"Så här", steps:[
+    {n:"1", art:"✏️", cap:"Tryck på pennan för att bygga."},
+    {n:"2", art:"➕", badge:"🖼️", cap:"Lägg till en aktivitet med bild."},
+    {n:"3", art:"☆", badge:"👆", cap:"Eller välj en favorit i biblioteket."},
+    {n:"4", art:"▶", cap:"Barnet trycker och tiden visas."},
+    {n:"5", art:"⏳", cap:"Cirkeln töms med tiden."},
+    {n:"6", art:"✓", cap:"Klart! Gå till nästa."},
+    {n:"⭐", art:"📅", badge:"✕", cap:"Stjärnfliken: kryssa dagar till resan."},
+    {n:"💬", art:"🗣️", badge:"🇸🇪", cap:"Prata-fliken: bygg meningen, lyssna och översätt."},
+  ]},
+};
+const helpEl=$("#help");
+function openHelp(){
+  const h=HELP[state.settings.lang]||HELP.pt;
+  $("#helpTitle").textContent=h.title;
+  const body=$("#helpBody"); body.innerHTML="";
+  h.steps.forEach(s=>{
+    const el=document.createElement("div"); el.className="step";
+    el.innerHTML=`<div class="n">${s.n}</div><div class="art">${s.art}${s.badge?`<span class="badge">${s.badge}</span>`:""}</div><div class="cap">${s.cap}</div>`;
+    body.appendChild(el);
+  });
+  helpEl.classList.add("open");
+}
+$("#helpBtn").addEventListener("click",openHelp);
+$("#helpClose").addEventListener("click",()=>helpEl.classList.remove("open"));
+$("#helpGot").addEventListener("click",()=>helpEl.classList.remove("open"));
+
+/* ============================================================
+   DAY-LINE — concrete "when" for clock activities.
+   The day runs sun -> moon; the now-dot walks toward the
+   activity picture. <=10 min: amber "get ready" (visual only).
+============================================================ */
+const daylineEl=$("#dayline");
+let dlActivity=null, dlInterval=null;
+function dayBounds(eventMin){
+  let start=6*60, end=21*60; // default waking day 06:00-21:00
+  if(eventMin!==null){ start=Math.min(start,Math.max(0,eventMin-60)); end=Math.max(end,Math.min(24*60,eventMin+60)); }
+  return [start,end];
+}
+function openDayline(a){
+  dlActivity=a;
+  $("#dlLabel").textContent=a.label||"";
+  $("#dlTime").textContent=a.time||"--:--";
+  $("#dlEvent").innerHTML = a.src==="emoji"?`<span>${a.img}</span>`:`<img alt="" src="${a.img}">`;
+  daylineEl.classList.add("open");
+  updateDayline();
+  clearInterval(dlInterval);
+  dlInterval=setInterval(updateDayline,20000);
+}
+function updateDayline(){
+  const a=dlActivity; if(!a) return;
+  const [h,m]=(a.time||"12:00").split(":").map(Number);
+  const eventMin=h*60+m;
+  const [start,end]=dayBounds(eventMin);
+  const now=new Date(); const nowMin=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  const pct=v=>Math.max(0,Math.min(100,(v-start)/(end-start)*100));
+  $("#dlEvent").style.left=Math.max(6,Math.min(94,pct(eventMin)))+"%";
+  $("#dlNow").style.left=pct(nowMin)+"%";
+  $("#dlNow").textContent=clockEmoji(now);
+  $("#dlPassed").style.width=pct(nowMin)+"%";
+  const remain=minsToTime(a.time);
+  daylineEl.classList.toggle("soon", remain!==null && remain<=10 && remain>=0);
+  daylineEl.classList.toggle("arrived", remain!==null && remain<=0);
+  $("#dlMsg").textContent = remain!==null && remain<=0 ? T().itsTime : (remain!==null && remain<=10 ? T().soon : "");
+}
+function closeDayline(){ daylineEl.classList.remove("open","soon","arrived"); clearInterval(dlInterval); dlActivity=null; }
+$("#dlClose").addEventListener("click",closeDayline);
+$("#dlDone").addEventListener("click",()=>{ if(dlActivity){ dlActivity.done=true; saveState(); renderRoutine(); } closeDayline(); });
+
+/* ============================================================
+   TIMER
+============================================================ */
+const timerEl=$("#timer"), disc=$("#disc"), discCenter=$("#discCenter"), tLabel=$("#tLabel"), tTime=$("#tTime");
+let raf=null, activeActivity=null, endAt=0, totalMs=0, audioCtx=null;
+let timerMin=false;
+const miniTimer=$("#miniTimer"), miniDisc=$("#miniDisc"), miniCenter=$("#miniCenter");
+function minimizeTimer(){
+  if(!activeActivity) return;
+  timerMin=true;
+  timerEl.classList.remove("open");
+  miniCenter.innerHTML = activeActivity.src==="emoji"?`<span>${activeActivity.img}</span>`:`<img alt="" src="${activeActivity.img}">`;
+  miniTimer.classList.toggle("finished", timerEl.classList.contains("finished"));
+  miniTimer.classList.add("show");
+}
+function restoreTimer(){
+  timerMin=false;
+  miniTimer.classList.remove("show");
+  timerEl.classList.add("open");
+}
+miniTimer.addEventListener("click",restoreTimer);
+$("#tTalk").addEventListener("click",()=>{
+  minimizeTimer();
+  const tb=document.querySelector('.tabs button[data-tab="talk"]'); if(tb) tb.click();
+});
+function startTimer(a){ activeActivity=a; timerMin=false; miniTimer.classList.remove("show","finished");
+  totalMs=a.minutes*60*1000; endAt=Date.now()+totalMs;
+  tLabel.textContent=a.label;
+  discCenter.innerHTML = a.src==="emoji"?`<span class="emoji">${a.img}</span>`:`<img alt="" src="${a.img}">`;
+  timerEl.classList.remove("finished"); timerEl.classList.add("open"); loop(); }
+function loop(){ const remain=Math.max(0,endAt-Date.now());
+  const pct=(totalMs>0?remain/totalMs*100:0).toFixed(2);
+  disc.style.setProperty("--pct",pct);
+  miniDisc.style.setProperty("--pct",pct);
+  tTime.textContent=fmt(remain);
+  if(remain<=0){ finishTimer(); return; } raf=requestAnimationFrame(loop); }
+function fmt(ms){ const s=Math.round(ms/1000),m=Math.floor(s/60),ss=s%60; return `${m}:${String(ss).padStart(2,"0")}`; }
+function finishTimer(){ cancelAnimationFrame(raf); timerEl.classList.add("finished"); disc.style.setProperty("--pct",100);
+  if(timerMin) miniTimer.classList.add("finished");
+  chime(); }
+function stopTimer(){ cancelAnimationFrame(raf); timerEl.classList.remove("open","finished");
+  miniTimer.classList.remove("show","finished"); timerMin=false; activeActivity=null; }
+$("#tStop").addEventListener("click",stopTimer);
+$("#tDone").addEventListener("click",()=>{
+  if(activeActivity) activeActivity.done=true; saveState(); renderRoutine(); stopTimer();
+  if(state.activities.length && state.activities.every(a=>a.done)){
+    setTimeout(()=>{ if(confirm("All done! 🎉  Start again?")){ state.activities.forEach(a=>a.done=false); saveState(); renderRoutine(); } },400);
+  }
+});
+function chime(){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+  [523.25,659.25,783.99].forEach((f,i)=>{ const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type="sine"; o.frequency.value=f; const t=audioCtx.currentTime+i*0.18;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.25,t+0.03); g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+    o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+0.55); }); }catch(e){} }
+
+/* ============================================================
+   PWA install
+============================================================ */
+/* keep the screen awake while the app is open (kitchen-tablet mode) */
+let wakeLock=null;
+async function keepAwake(){
+  try{
+    if(!("wakeLock" in navigator)) return;
+    wakeLock=await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release",()=>{ wakeLock=null; });
+  }catch(e){ /* not granted / unsupported: system setting applies */ }
+}
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") keepAwake(); });
+keepAwake();
+
+/* single-file build: no external service worker */
+(function(){
+  const manifest = { name:"Visual Routine", short_name:"Routine", display:"standalone",
+    background_color:"#eef2f6", theme_color:"#eef2f6", start_url:".", scope:".",
+    icons:[{ src:"data:image/png;base64,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", sizes:"512x512", type:"image/png", purpose:"any maskable" }] };
+  try{ const blob=new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"});
+    const link=document.createElement("link"); link.rel="manifest"; link.href=URL.createObjectURL(blob); document.head.appendChild(link);
+  }catch(e){}
+})();
+const banner=$("#installBanner"); let deferredPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); deferredPrompt=e;
+  $("#installText").textContent="Install this app on your tablet."; banner.classList.add("show"); });
+$("#installBtn").addEventListener("click",async()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; banner.classList.remove("show"); }
+});
+$("#installClose").addEventListener("click",()=>banner.classList.remove("show"));
+window.addEventListener("appinstalled",()=>banner.classList.remove("show"));
+// iOS has no install prompt: show a hint instead
+(function(){ const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone=window.navigator.standalone===true||window.matchMedia("(display-mode: standalone)").matches;
+  if(isIOS && !standalone){ $("#installBtn").style.display="none";
+    $("#installText").innerHTML="To install: tap <b>Share ▸ Add to Home Screen</b>."; banner.classList.add("show"); }
+})();
+
+/* ---------------- boot ---------------- */
+document.addEventListener("dblclick",e=>e.preventDefault(),{passive:false});
+function renderAll(){ renderRoutine(); renderEvents(); if(detailEvent) renderDetail(); renderCats(); renderBoard(); renderStrip(); }
+applyLang();
+</script>
+</body>
+</html>
