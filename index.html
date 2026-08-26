@@ -147,18 +147,19 @@
   .fav-preview{display:flex;align-items:center;gap:16px;background:var(--surface);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
   .fp-name{font-weight:800;font-size:1.3em}
   /* day rail: vertical sun->moon timeline beside the routine list */
-  .day-wrap{display:flex;gap:14px;align-items:stretch}
-  .rail{flex:0 0 60px;display:flex;flex-direction:column;align-items:center;gap:6px;
-    position:sticky;top:8px;align-self:flex-start;height:calc(100dvh - 270px);min-height:380px}
-  .rail-end{font-size:24px;line-height:1}
-  .rail-track{flex:1;width:22px;background:var(--surface);border-radius:11px;position:relative;
+  .day-wrap{display:flex;gap:10px;align-items:stretch}
+  .rail{flex:0 0 92px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+    position:sticky;top:8px;align-self:flex-start;height:calc(100dvh - 270px);min-height:380px;padding-left:4px}
+  .rail-end{font-size:24px;line-height:1;width:30px;text-align:center}
+  .rail-track{flex:1;width:22px;margin-left:4px;background:var(--surface);border-radius:11px;position:relative;
     box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
-  .rail-passed{position:absolute;top:0;left:0;right:0;background:#cfdde6;border-radius:11px 11px 0 0}
+  .rail-passed{position:absolute;top:0;left:0;right:0;background:rgba(230,165,76,.55);border-radius:11px 11px 0 0}
   .rail-now{position:absolute;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;
     background:#fff;border:3px solid var(--now);box-shadow:var(--shadow);z-index:3;
     display:grid;place-items:center;font-size:19px;line-height:1}
-  .rail-mark{position:absolute;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:12px;
+  .rail-mark{position:absolute;left:calc(100% + 12px);transform:translateY(-50%);width:46px;height:46px;border-radius:12px;
     background:var(--surface);border:3px solid var(--calm);display:grid;place-items:center;overflow:hidden;font-size:24px;z-index:2}
+  .rail-mark::before{content:"";position:absolute;right:100%;top:50%;transform:translateY(-50%);width:12px;height:4px;background:var(--calm);border-radius:2px}
   .rail-mark img{width:88%;height:88%;object-fit:contain}
   .rail-mark.done{border-color:var(--done);opacity:.55}
   .rail-mark.soon{border-color:var(--now)}
@@ -166,20 +167,22 @@
     .rail-mark.soon{animation:rail-pulse 1.6s ease-in-out infinite}
     @keyframes rail-pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,165,76,.45)}50%{box-shadow:0 0 0 10px rgba(230,165,76,0)}}
   }
-  .rail-mark:active{transform:translate(-50%,-50%) scale(.94)}
+  .rail-mark:active{transform:translateY(-50%) scale(.94)}
 
   /* day-line (sun -> moon) for clock activities */
   .dayline{position:fixed;inset:0;background:var(--surface);z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px;text-align:center}
   .dayline.open{display:flex}
   .dayline .dl-label{font-size:1.5em;font-weight:800}
   .dl-time{font-size:2.4em;font-weight:800;color:var(--calm);font-variant-numeric:tabular-nums}
-  .dl-track-wrap{width:min(86vw,760px);display:flex;align-items:center;gap:12px}
+  .dl-track-wrap{width:min(86vw,760px);display:flex;align-items:center;gap:12px;margin-top:78px}
   .dl-end{font-size:38px;flex:0 0 auto}
   .dl-track{position:relative;flex:1;height:26px;background:var(--surface-2);border-radius:13px;box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
-  .dl-passed{position:absolute;left:0;top:0;bottom:0;background:#cfdde6;border-radius:13px 0 0 13px}
+  .dl-passed{position:absolute;left:0;top:0;bottom:0;background:rgba(230,165,76,.55);border-radius:13px 0 0 13px}
   .dl-now{position:absolute;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:#fff;border:4px solid var(--now);box-shadow:var(--shadow);z-index:2;display:grid;place-items:center;font-size:24px;line-height:1}
-  .dl-event{position:absolute;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:20px;background:var(--surface);border:4px solid var(--calm);box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden;font-size:40px;z-index:1}
+  .dl-event{position:absolute;bottom:calc(100% + 14px);transform:translateX(-50%);width:76px;height:76px;border-radius:20px;background:var(--surface);border:4px solid var(--calm);box-shadow:var(--shadow);display:grid;place-items:center;font-size:40px;z-index:1}
   .dl-event img{width:88%;height:88%;object-fit:contain}
+  .dl-event::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);width:5px;height:14px;background:var(--calm);border-radius:3px}
+  .dl-event>span,.dl-event>img{border-radius:14px;overflow:hidden}
   .dayline.soon .dl-event{border-color:var(--now)}
   @media (prefers-reduced-motion: no-preference){
     .dayline.soon .dl-event{animation:dl-pulse 1.6s ease-in-out infinite}
@@ -1294,7 +1297,7 @@ function updateDayline(){
   const [start,end]=dayBounds(eventMin);
   const now=new Date(); const nowMin=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
   const pct=v=>Math.max(0,Math.min(100,(v-start)/(end-start)*100));
-  $("#dlEvent").style.left=pct(eventMin)+"%";
+  $("#dlEvent").style.left=Math.max(6,Math.min(94,pct(eventMin)))+"%";
   $("#dlNow").style.left=pct(nowMin)+"%";
   $("#dlNow").textContent=clockEmoji(now);
   $("#dlPassed").style.width=pct(nowMin)+"%";
