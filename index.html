@@ -146,6 +146,21 @@
   .lib-card:active{transform:scale(.97)}
   .fav-preview{display:flex;align-items:center;gap:16px;background:var(--surface);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
   .fp-name{font-weight:800;font-size:1.3em}
+  /* floating mini-timer (timer keeps running while using other tabs) */
+  .mini-timer{position:fixed;right:14px;bottom:calc(98px + env(safe-area-inset-bottom));width:80px;height:80px;
+    border-radius:50%;z-index:45;display:none;box-shadow:var(--shadow);cursor:pointer}
+  .mini-timer.show{display:block}
+  .mini-disc{width:100%;height:100%;border-radius:50%;
+    background:conic-gradient(var(--now) calc(var(--pct)*1%), var(--surface-2) 0);
+    box-shadow:inset 0 0 0 5px var(--surface-2)}
+  .mini-center{position:absolute;inset:24%;border-radius:50%;background:var(--surface);
+    display:grid;place-items:center;overflow:hidden;font-size:22px}
+  .mini-center img{width:82%;height:82%;object-fit:contain}
+  .mini-timer.finished .mini-disc{background:var(--done)}
+  .mini-timer.finished .mini-center{display:none}
+  .mini-timer.finished::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:32px;font-weight:800}
+  .t-btn.talk{background:var(--surface-2);font-size:26px}
+
   /* day rail: vertical sun->moon timeline beside the routine list */
   .day-wrap{display:flex;gap:10px;align-items:stretch}
   .rail{flex:0 0 92px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;
@@ -507,8 +522,15 @@
   <div class="t-time" id="tTime">10:00</div>
   <div class="t-actions">
     <button class="t-btn stop" id="tStop">✕ Stop</button>
+    <button class="t-btn talk" id="tTalk" aria-label="Open talk board">💬</button>
     <button class="t-btn done" id="tDone">✓ Done</button>
   </div>
+</div>
+
+<!-- floating mini-timer -->
+<div class="mini-timer" id="miniTimer">
+  <div class="mini-disc" id="miniDisc" style="--pct:100"></div>
+  <div class="mini-center" id="miniCenter"></div>
 </div>
 
 <!-- Countdown detail overlay -->
@@ -691,7 +713,7 @@ function renderRoutine(){
     const soon = type==="clock" && !a.done && minsToTime(a.time)!==null && minsToTime(a.time)<=10 && minsToTime(a.time)>=0;
     card.className="card"+(a.done?" done":"")+(i===cur?" now":"")+(soon?" soon":"");
     const sub = type==="timer" ? `⏱️ ${a.minutes} min` : (type==="clock" ? `🕐 ${a.time||"--:--"}${soon?` · <b>${T().soon}</b>`:""}` : "");
-    const goIcon = type==="timer" ? "▶" : (type==="clock" ? "🕐" : "✓");
+    const goIcon = a.done ? "↺" : (type==="timer" ? "▶" : (type==="clock" ? "🕐" : "✓"));
     card.innerHTML=`
       <div class="pic">${picMarkup(a)}</div>
       <div class="meta"><div class="label">${escapeHtml(a.label||"Activity")}</div><div class="sub">${sub}</div></div>
@@ -699,6 +721,7 @@ function renderRoutine(){
       <div class="edit-tools"><button class="mini up">▲</button><button class="mini down">▼</button><button class="mini del">🗑️</button></div>
       <div class="check">✓</div>`;
     card.querySelector(".go").addEventListener("click",()=>{
+      if(a.done){ a.done=false; saveState(); renderRoutine(); return; } // undo accidental "done"
       if(type==="timer") startTimer(a);
       else if(type==="clock") openDayline(a);
       else { a.done=true; saveState(); renderRoutine(); }
@@ -1315,17 +1338,43 @@ $("#dlDone").addEventListener("click",()=>{ if(dlActivity){ dlActivity.done=true
 ============================================================ */
 const timerEl=$("#timer"), disc=$("#disc"), discCenter=$("#discCenter"), tLabel=$("#tLabel"), tTime=$("#tTime");
 let raf=null, activeActivity=null, endAt=0, totalMs=0, audioCtx=null;
-function startTimer(a){ activeActivity=a; totalMs=a.minutes*60*1000; endAt=Date.now()+totalMs;
+let timerMin=false;
+const miniTimer=$("#miniTimer"), miniDisc=$("#miniDisc"), miniCenter=$("#miniCenter");
+function minimizeTimer(){
+  if(!activeActivity) return;
+  timerMin=true;
+  timerEl.classList.remove("open");
+  miniCenter.innerHTML = activeActivity.src==="emoji"?`<span>${activeActivity.img}</span>`:`<img alt="" src="${activeActivity.img}">`;
+  miniTimer.classList.toggle("finished", timerEl.classList.contains("finished"));
+  miniTimer.classList.add("show");
+}
+function restoreTimer(){
+  timerMin=false;
+  miniTimer.classList.remove("show");
+  timerEl.classList.add("open");
+}
+miniTimer.addEventListener("click",restoreTimer);
+$("#tTalk").addEventListener("click",()=>{
+  minimizeTimer();
+  const tb=document.querySelector('.tabs button[data-tab="talk"]'); if(tb) tb.click();
+});
+function startTimer(a){ activeActivity=a; timerMin=false; miniTimer.classList.remove("show","finished");
+  totalMs=a.minutes*60*1000; endAt=Date.now()+totalMs;
   tLabel.textContent=a.label;
   discCenter.innerHTML = a.src==="emoji"?`<span class="emoji">${a.img}</span>`:`<img alt="" src="${a.img}">`;
   timerEl.classList.remove("finished"); timerEl.classList.add("open"); loop(); }
 function loop(){ const remain=Math.max(0,endAt-Date.now());
-  disc.style.setProperty("--pct",(totalMs>0?remain/totalMs*100:0).toFixed(2));
+  const pct=(totalMs>0?remain/totalMs*100:0).toFixed(2);
+  disc.style.setProperty("--pct",pct);
+  miniDisc.style.setProperty("--pct",pct);
   tTime.textContent=fmt(remain);
   if(remain<=0){ finishTimer(); return; } raf=requestAnimationFrame(loop); }
 function fmt(ms){ const s=Math.round(ms/1000),m=Math.floor(s/60),ss=s%60; return `${m}:${String(ss).padStart(2,"0")}`; }
-function finishTimer(){ cancelAnimationFrame(raf); timerEl.classList.add("finished"); disc.style.setProperty("--pct",100); chime(); }
-function stopTimer(){ cancelAnimationFrame(raf); timerEl.classList.remove("open","finished"); activeActivity=null; }
+function finishTimer(){ cancelAnimationFrame(raf); timerEl.classList.add("finished"); disc.style.setProperty("--pct",100);
+  if(timerMin) miniTimer.classList.add("finished");
+  chime(); }
+function stopTimer(){ cancelAnimationFrame(raf); timerEl.classList.remove("open","finished");
+  miniTimer.classList.remove("show","finished"); timerMin=false; activeActivity=null; }
 $("#tStop").addEventListener("click",stopTimer);
 $("#tDone").addEventListener("click",()=>{
   if(activeActivity) activeActivity.done=true; saveState(); renderRoutine(); stopTimer();
