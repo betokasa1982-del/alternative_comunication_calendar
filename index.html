@@ -59,6 +59,10 @@
   .card.now{border-color:var(--now)}
   .card.done{opacity:.55}
   .card.done .go{background:var(--done)}
+  .card .go.t-check{background:var(--done)}
+  .card .go.t-clock{background:var(--calm)}
+  .card.soon{border-color:var(--now)}
+  .card.soon .sub b{color:var(--now)}
   .card .check{position:absolute;top:-10px;right:-10px;width:40px;height:40px;border-radius:50%;background:var(--done);color:#fff;display:none;place-items:center;font-size:22px;box-shadow:var(--shadow)}
   .card.done .check{display:grid}
   /* countdown badge on event cards */
@@ -142,6 +146,27 @@
   .lib-card:active{transform:scale(.97)}
   .fav-preview{display:flex;align-items:center;gap:16px;background:var(--surface);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
   .fp-name{font-weight:800;font-size:1.3em}
+  /* day-line (sun -> moon) for clock activities */
+  .dayline{position:fixed;inset:0;background:var(--surface);z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px;text-align:center}
+  .dayline.open{display:flex}
+  .dayline .dl-label{font-size:1.5em;font-weight:800}
+  .dl-time{font-size:2.4em;font-weight:800;color:var(--calm);font-variant-numeric:tabular-nums}
+  .dl-track-wrap{width:min(86vw,760px);display:flex;align-items:center;gap:12px}
+  .dl-end{font-size:38px;flex:0 0 auto}
+  .dl-track{position:relative;flex:1;height:26px;background:var(--surface-2);border-radius:13px;box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
+  .dl-passed{position:absolute;left:0;top:0;bottom:0;background:#cfdde6;border-radius:13px 0 0 13px}
+  .dl-now{position:absolute;top:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:var(--now);border:4px solid #fff;box-shadow:var(--shadow);z-index:2}
+  .dl-event{position:absolute;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:20px;background:var(--surface);border:4px solid var(--calm);box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden;font-size:40px;z-index:1}
+  .dl-event img{width:88%;height:88%;object-fit:contain}
+  .dayline.soon .dl-event{border-color:var(--now)}
+  @media (prefers-reduced-motion: no-preference){
+    .dayline.soon .dl-event{animation:dl-pulse 1.6s ease-in-out infinite}
+    @keyframes dl-pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,165,76,.45)}50%{box-shadow:0 0 0 14px rgba(230,165,76,0)}}
+  }
+  .dl-msg{min-height:1.5em;font-weight:800;font-size:1.25em;color:var(--now)}
+  .dayline.arrived .dl-msg{color:var(--done)}
+  .dl-actions{display:flex;gap:14px}
+
   /* AAC talk board */
   .strip-wrap{display:flex;gap:10px;align-items:stretch;margin-bottom:10px}
   .strip{flex:1;min-height:96px;background:var(--surface);border-radius:18px;box-shadow:var(--shadow);
@@ -334,6 +359,15 @@
         <label>Date</label>
         <input id="dateInput" type="date" />
       </div>
+      <div class="field" id="timeField" style="flex:0 0 150px;display:none">
+        <label>Time</label>
+        <input id="timeInput" type="time" />
+      </div>
+    </div>
+    <div class="seg" id="typeSeg" style="display:none">
+      <button data-type="timer" class="on">⏱ Timer</button>
+      <button data-type="check">✓ Simple</button>
+      <button data-type="clock">🕐 Time</button>
     </div>
     <div class="row" id="wordFields" style="display:none">
       <div class="field"><label>Svenska (SV)</label><input id="svInput" placeholder="e.g. äta" autocomplete="off" /></div>
@@ -400,6 +434,26 @@
   </div>
 </div>
 
+<!-- Day-line overlay (clock activities) -->
+<div class="dayline" id="dayline">
+  <div class="dl-label" id="dlLabel"></div>
+  <div class="dl-time" id="dlTime">--:--</div>
+  <div class="dl-track-wrap">
+    <div class="dl-end">☀️</div>
+    <div class="dl-track" id="dlTrack">
+      <div class="dl-passed" id="dlPassed"></div>
+      <div class="dl-event" id="dlEvent"></div>
+      <div class="dl-now" id="dlNow"></div>
+    </div>
+    <div class="dl-end">🌙</div>
+  </div>
+  <div class="dl-msg" id="dlMsg"></div>
+  <div class="dl-actions">
+    <button class="t-btn stop" id="dlClose">✕</button>
+    <button class="t-btn done" id="dlDone">✓ Done</button>
+  </div>
+</div>
+
 <!-- Help / how-to overlay -->
 <div class="help" id="help">
   <header>
@@ -448,17 +502,17 @@ const MS = 86400000;
 /* child-facing strings (only these are translated; admin UI stays English) */
 const STR = {
   pt:{ toGo:"Faltam", one:"Falta", days:"dias", day:"dia", today:"É hoje! 🎉", passed:"Já passou", stamp:"Marcar hoje",
-       tabRoutine:"Rotina", tabCountdown:"Contagem", tabTalk:"Falar", catsAll:"Todas",
+       tabRoutine:"Rotina", tabCountdown:"Contagem", tabTalk:"Falar", catsAll:"Todas", soon:"Quase!", itsTime:"Chegou a hora! 🎉",
        cats:{social:"Social",people:"Pessoas",actions:"Ações",feel:"Sentimentos",food:"Comida",places:"Lugares",things:"Coisas"},
        wd:["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"],
        mo:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"] },
   sv:{ toGo:"", one:"", days:"dagar", day:"dag", today:"Idag! 🎉", passed:"Passerat", stamp:"Markera idag",
-       tabRoutine:"Rutin", tabCountdown:"Nedräkning", tabTalk:"Prata", catsAll:"Alla",
+       tabRoutine:"Rutin", tabCountdown:"Nedräkning", tabTalk:"Prata", catsAll:"Alla", soon:"Snart!", itsTime:"Nu är det dags! 🎉",
        cats:{social:"Socialt",people:"Personer",actions:"Handlingar",feel:"Känslor",food:"Mat",places:"Platser",things:"Saker"},
        wd:["Mån","Tis","Ons","Tor","Fre","Lör","Sön"],
        mo:["Januari","Februari","Mars","April","Maj","Juni","Juli","Augusti","September","Oktober","November","December"] },
   en:{ toGo:"", one:"", days:"days", day:"day", today:"Today! 🎉", passed:"Passed", stamp:"Mark today",
-       tabRoutine:"Routine", tabCountdown:"Countdown", tabTalk:"Talk", catsAll:"All",
+       tabRoutine:"Routine", tabCountdown:"Countdown", tabTalk:"Talk", catsAll:"All", soon:"Almost!", itsTime:"It's time! 🎉",
        cats:{social:"Social",people:"People",actions:"Actions",feel:"Feelings",food:"Food",places:"Places",things:"Things"},
        wd:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
        mo:["January","February","March","April","May","June","July","August","September","October","November","December"] }
@@ -511,6 +565,13 @@ function todayISO(){ return isoOf(new Date()); }
 function parseISO(s){ const [y,m,dd]=s.split("-").map(Number); return new Date(y,m-1,dd); }
 function daysUntil(iso){ return Math.round((parseISO(iso) - parseISO(todayISO()))/MS); }
 function mondayCol(d){ return (d.getDay()+6)%7; } // 0=Mon .. 6=Sun
+function minsToTime(hhmm){
+  if(!hhmm) return null;
+  const [h,m]=hhmm.split(":").map(Number); if(isNaN(h)) return null;
+  const now=new Date();
+  return (h*60+m) - (now.getHours()*60+now.getMinutes());
+}
+setInterval(()=>{ if((state.activities||[]).some(a=>(a.type==="clock")&&!a.done)) renderRoutine(); },60000);
 
 /* ---------------- shorthand ---------------- */
 const $ = s => document.querySelector(s);
@@ -564,14 +625,22 @@ function renderRoutine(){
   if(!state.activities.length){ routineEl.innerHTML=`<div class="empty"><div class="big">🗓️</div>No activities yet.<br>Tap ✏️, then “Add activity”.</div>`; }
   state.activities.forEach((a,i)=>{
     const card=document.createElement("div");
-    card.className="card"+(a.done?" done":"")+(i===cur?" now":"");
+    const type=a.type||"timer";
+    const soon = type==="clock" && !a.done && minsToTime(a.time)!==null && minsToTime(a.time)<=10 && minsToTime(a.time)>=0;
+    card.className="card"+(a.done?" done":"")+(i===cur?" now":"")+(soon?" soon":"");
+    const sub = type==="timer" ? `⏱️ ${a.minutes} min` : (type==="clock" ? `🕐 ${a.time||"--:--"}${soon?` · <b>${T().soon}</b>`:""}` : "");
+    const goIcon = type==="timer" ? "▶" : (type==="clock" ? "🕐" : "✓");
     card.innerHTML=`
       <div class="pic">${picMarkup(a)}</div>
-      <div class="meta"><div class="label">${escapeHtml(a.label||"Activity")}</div><div class="sub">⏱️ ${a.minutes} min</div></div>
-      <button class="go" aria-label="Start">▶</button>
+      <div class="meta"><div class="label">${escapeHtml(a.label||"Activity")}</div><div class="sub">${sub}</div></div>
+      <button class="go t-${type}" aria-label="Start">${goIcon}</button>
       <div class="edit-tools"><button class="mini up">▲</button><button class="mini down">▼</button><button class="mini del">🗑️</button></div>
       <div class="check">✓</div>`;
-    card.querySelector(".go").addEventListener("click",()=>startTimer(a));
+    card.querySelector(".go").addEventListener("click",()=>{
+      if(type==="timer") startTimer(a);
+      else if(type==="clock") openDayline(a);
+      else { a.done=true; saveState(); renderRoutine(); }
+    });
     card.querySelector(".up").addEventListener("click",()=>moveA(i,-1));
     card.querySelector(".down").addEventListener("click",()=>moveA(i,1));
     card.querySelector(".del").addEventListener("click",()=>{state.activities.splice(i,1);saveState();renderRoutine();});
@@ -702,16 +771,24 @@ function renderCalendar(ev){
 ============================================================ */
 const sheet=$("#sheet"), sheetTitle=$("#sheetTitle");
 const labelInput=$("#labelInput"), minutesInput=$("#minutesInput"), dateInput=$("#dateInput"), previewPic=$("#previewPic");
-let editMode="activity", editingIndex=-1, draft={src:"arasaac",img:null};
+let editMode="activity", editingIndex=-1, draft={src:"arasaac",img:null}, actType="timer";
+function setActType(t){
+  actType=t;
+  [...$("#typeSeg").children].forEach(b=>b.classList.toggle("on",b.dataset.type===t));
+  $("#minutesField").style.display = t==="timer"?"":"none";
+  $("#timeField").style.display    = t==="clock"?"":"none";
+}
+document.addEventListener("DOMContentLoaded",()=>{});
 const EMOJIS=["🛏️","🥣","🍎","🪥","👕","🚽","🛁","🧸","📚","✏️","🚗","✈️","🏖️","🎂","🎁","🎄","🏫","🎨","⚽","🧩","🎵","🍽️","💤","🚿","☀️","🌙","👟","🍌","🥛","🖥️"];
 
 function openSheet(mode,index){
   editMode=mode; editingIndex=(typeof index==="number")?index:-1;
-  $("#minutesField").style.display = mode==="activity"?"":"none";
+  $("#typeSeg").style.display     = mode==="activity"?"flex":"none";
   $("#dateField").style.display    = mode==="event"?"":"none";
   $("#favField").style.display     = mode==="activity"?"flex":"none";
   $("#wordFields").style.display   = mode==="word"?"flex":"none";
   $("#favChk").checked = false;
+  if(mode!=="activity"){ $("#minutesField").style.display="none"; $("#timeField").style.display="none"; }
   if(mode==="word"){
     const sel=$("#catSel");
     if(!sel.options.length) CAT_ORDER.forEach(c=>{ const o=document.createElement("option"); o.value=c; o.textContent=T().cats[c]; sel.appendChild(o); });
@@ -720,15 +797,16 @@ function openSheet(mode,index){
     const it = mode==="activity"?state.activities[editingIndex]:(mode==="event"?state.events[editingIndex]:state.aacCards[editingIndex]);
     sheetTitle.textContent = mode==="activity"?"Edit activity":(mode==="event"?"Edit special day":"Edit word");
     labelInput.value = mode==="activity"?it.label:(mode==="event"?it.name:(it.labels&&it.labels.pt)||"");
-    if(mode==="activity") minutesInput.value=it.minutes;
+    if(mode==="activity"){ minutesInput.value=it.minutes||10; $("#timeInput").value=it.time||""; setActType(it.type||"timer"); }
     if(mode==="event") dateInput.value=it.date;
     if(mode==="word"){ $("#svInput").value=(it.labels&&it.labels.sv)||""; $("#enInput").value=(it.labels&&it.labels.en)||""; $("#catSel").value=it.cat||"things"; }
     draft={src:it.src,img:it.img};
   }else{
     sheetTitle.textContent = mode==="activity"?"Add activity":(mode==="event"?"Add special day":"Add word");
     labelInput.value=""; minutesInput.value=10;
-    dateInput.value=""; $("#svInput").value=""; $("#enInput").value="";
+    dateInput.value=""; $("#timeInput").value=""; $("#svInput").value=""; $("#enInput").value="";
     draft={src:"emoji",img:null};
+    if(mode==="activity") setActType("timer");
   }
   labelInput.placeholder = mode==="activity"?"e.g. Breakfast":(mode==="event"?"e.g. Trip to grandma":"Português, ex.: bolo");
   setSource(draft.src||"arasaac"); updatePreview();
@@ -742,6 +820,7 @@ $("#cancelBtn").addEventListener("click",closeSheet);
 sheet.addEventListener("click",e=>{ if(e.target===sheet) closeSheet(); });
 
 $("#sourceSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setSource(b.dataset.src); });
+$("#typeSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setActType(b.dataset.type); });
 function setSource(src){ draft.src=src;
   [...$("#sourceSeg").children].forEach(b=>b.classList.toggle("on",b.dataset.src===src));
   $("#src-arasaac").style.display=src==="arasaac"?"":"none";
@@ -808,9 +887,11 @@ $("#saveBtn").addEventListener("click",async()=>{
   if(editMode==="activity"){
     const label=labelInput.value.trim()||"Activity";
     const minutes=Math.max(1,Math.min(90,parseInt(minutesInput.value,10)||10));
-    if(editingIndex>=0) Object.assign(state.activities[editingIndex],{label,minutes,src,img});
-    else state.activities.push({id:uid(),label,minutes,src,img,done:false});
-    if($("#favChk").checked) addFavorite({label,minutes,src,img});
+    const type=actType||"timer";
+    const time=$("#timeInput").value||"";
+    if(editingIndex>=0) Object.assign(state.activities[editingIndex],{label,minutes,src,img,type,time});
+    else state.activities.push({id:uid(),label,minutes,src,img,type,time,done:false});
+    if($("#favChk").checked) addFavorite({label,minutes,src,img,type,time});
     renderRoutine();
   }else if(editMode==="event"){
     const name=labelInput.value.trim()||"Special day";
@@ -839,7 +920,7 @@ function addFavorite(f){
   // de-dupe by label+minutes so the library stays clean
   const key=(f.label||"").trim().toLowerCase()+"|"+f.minutes;
   if(state.favorites.some(x=>((x.label||"").trim().toLowerCase()+"|"+x.minutes)===key)) return;
-  state.favorites.push({id:uid(),label:f.label,minutes:f.minutes,src:f.src,img:f.img});
+  state.favorites.push({id:uid(),label:f.label,minutes:f.minutes,src:f.src,img:f.img,type:f.type||"timer",time:f.time||""});
   saveState();
 }
 const library=$("#library"), favPreview=$("#favPreview");
@@ -871,7 +952,7 @@ $("#fpCancel").addEventListener("click",()=>favPreview.classList.remove("open"))
 favPreview.addEventListener("click",e=>{ if(e.target===favPreview) favPreview.classList.remove("open"); });
 $("#fpConfirm").addEventListener("click",()=>{
   if(pendingFav){
-    state.activities.push({id:uid(),label:pendingFav.label,minutes:pendingFav.minutes,src:pendingFav.src,img:pendingFav.img,done:false});
+    state.activities.push({id:uid(),label:pendingFav.label,minutes:pendingFav.minutes,src:pendingFav.src,img:pendingFav.img,type:pendingFav.type||"timer",time:pendingFav.time||"",done:false});
     saveState(); renderRoutine();
   }
   favPreview.classList.remove("open");
@@ -1124,6 +1205,47 @@ function openHelp(){
 $("#helpBtn").addEventListener("click",openHelp);
 $("#helpClose").addEventListener("click",()=>helpEl.classList.remove("open"));
 $("#helpGot").addEventListener("click",()=>helpEl.classList.remove("open"));
+
+/* ============================================================
+   DAY-LINE — concrete "when" for clock activities.
+   The day runs sun -> moon; the now-dot walks toward the
+   activity picture. <=10 min: amber "get ready" (visual only).
+============================================================ */
+const daylineEl=$("#dayline");
+let dlActivity=null, dlInterval=null;
+function dayBounds(eventMin){
+  let start=6*60, end=21*60; // default waking day 06:00-21:00
+  if(eventMin!==null){ start=Math.min(start,Math.max(0,eventMin-60)); end=Math.max(end,Math.min(24*60,eventMin+60)); }
+  return [start,end];
+}
+function openDayline(a){
+  dlActivity=a;
+  $("#dlLabel").textContent=a.label||"";
+  $("#dlTime").textContent=a.time||"--:--";
+  $("#dlEvent").innerHTML = a.src==="emoji"?`<span>${a.img}</span>`:`<img alt="" src="${a.img}">`;
+  daylineEl.classList.add("open");
+  updateDayline();
+  clearInterval(dlInterval);
+  dlInterval=setInterval(updateDayline,20000);
+}
+function updateDayline(){
+  const a=dlActivity; if(!a) return;
+  const [h,m]=(a.time||"12:00").split(":").map(Number);
+  const eventMin=h*60+m;
+  const [start,end]=dayBounds(eventMin);
+  const now=new Date(); const nowMin=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  const pct=v=>Math.max(0,Math.min(100,(v-start)/(end-start)*100));
+  $("#dlEvent").style.left=pct(eventMin)+"%";
+  $("#dlNow").style.left=pct(nowMin)+"%";
+  $("#dlPassed").style.width=pct(nowMin)+"%";
+  const remain=minsToTime(a.time);
+  daylineEl.classList.toggle("soon", remain!==null && remain<=10 && remain>=0);
+  daylineEl.classList.toggle("arrived", remain!==null && remain<=0);
+  $("#dlMsg").textContent = remain!==null && remain<=0 ? T().itsTime : (remain!==null && remain<=10 ? T().soon : "");
+}
+function closeDayline(){ daylineEl.classList.remove("open","soon","arrived"); clearInterval(dlInterval); dlActivity=null; }
+$("#dlClose").addEventListener("click",closeDayline);
+$("#dlDone").addEventListener("click",()=>{ if(dlActivity){ dlActivity.done=true; saveState(); renderRoutine(); } closeDayline(); });
 
 /* ============================================================
    TIMER
