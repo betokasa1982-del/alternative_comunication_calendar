@@ -146,6 +146,28 @@
   .lib-card:active{transform:scale(.97)}
   .fav-preview{display:flex;align-items:center;gap:16px;background:var(--surface);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
   .fp-name{font-weight:800;font-size:1.3em}
+  /* day rail: vertical sun->moon timeline beside the routine list */
+  .day-wrap{display:flex;gap:14px;align-items:stretch}
+  .rail{flex:0 0 60px;display:flex;flex-direction:column;align-items:center;gap:6px;
+    position:sticky;top:8px;align-self:flex-start;height:calc(100dvh - 270px);min-height:380px}
+  .rail-end{font-size:24px;line-height:1}
+  .rail-track{flex:1;width:22px;background:var(--surface);border-radius:11px;position:relative;
+    box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
+  .rail-passed{position:absolute;top:0;left:0;right:0;background:#cfdde6;border-radius:11px 11px 0 0}
+  .rail-now{position:absolute;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;
+    background:#fff;border:3px solid var(--now);box-shadow:var(--shadow);z-index:3;
+    display:grid;place-items:center;font-size:19px;line-height:1}
+  .rail-mark{position:absolute;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:12px;
+    background:var(--surface);border:3px solid var(--calm);display:grid;place-items:center;overflow:hidden;font-size:24px;z-index:2}
+  .rail-mark img{width:88%;height:88%;object-fit:contain}
+  .rail-mark.done{border-color:var(--done);opacity:.55}
+  .rail-mark.soon{border-color:var(--now)}
+  @media (prefers-reduced-motion: no-preference){
+    .rail-mark.soon{animation:rail-pulse 1.6s ease-in-out infinite}
+    @keyframes rail-pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,165,76,.45)}50%{box-shadow:0 0 0 10px rgba(230,165,76,0)}}
+  }
+  .rail-mark:active{transform:translate(-50%,-50%) scale(.94)}
+
   /* day-line (sun -> moon) for clock activities */
   .dayline{position:fixed;inset:0;background:var(--surface);z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px;text-align:center}
   .dayline.open{display:flex}
@@ -155,7 +177,7 @@
   .dl-end{font-size:38px;flex:0 0 auto}
   .dl-track{position:relative;flex:1;height:26px;background:var(--surface-2);border-radius:13px;box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
   .dl-passed{position:absolute;left:0;top:0;bottom:0;background:#cfdde6;border-radius:13px 0 0 13px}
-  .dl-now{position:absolute;top:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:var(--now);border:4px solid #fff;box-shadow:var(--shadow);z-index:2}
+  .dl-now{position:absolute;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:#fff;border:4px solid var(--now);box-shadow:var(--shadow);z-index:2;display:grid;place-items:center;font-size:24px;line-height:1}
   .dl-event{position:absolute;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:20px;background:var(--surface);border:4px solid var(--calm);box-shadow:var(--shadow);display:grid;place-items:center;overflow:hidden;font-size:40px;z-index:1}
   .dl-event img{width:88%;height:88%;object-fit:contain}
   .dayline.soon .dl-event{border-color:var(--now)}
@@ -303,7 +325,17 @@
     <!-- ROUTINE -->
     <section class="view on" id="view-routine">
       <div class="progress" id="progress"></div>
-      <div class="list" id="routine"></div>
+      <div class="day-wrap">
+        <div class="rail" id="rail">
+          <div class="rail-end">☀️</div>
+          <div class="rail-track" id="railTrack">
+            <div class="rail-passed" id="railPassed"></div>
+            <div class="rail-now" id="railNow"></div>
+          </div>
+          <div class="rail-end">🌙</div>
+        </div>
+        <div class="list" id="routine" style="flex:1;min-width:0"></div>
+      </div>
       <div class="addbar">
         <button class="addbtn secondary" id="openLibraryBtn">☆ &nbsp;Library</button>
         <button class="addbtn" id="addActivityBtn">＋ &nbsp;Add activity</button>
@@ -571,6 +603,7 @@ function minsToTime(hhmm){
   const now=new Date();
   return (h*60+m) - (now.getHours()*60+now.getMinutes());
 }
+function clockEmoji(d){ const h=d.getHours()%12; return String.fromCodePoint(0x1F550 + ((h+11)%12)); }
 setInterval(()=>{ if((state.activities||[]).some(a=>(a.type==="clock")&&!a.done)) renderRoutine(); },60000);
 
 /* ---------------- shorthand ---------------- */
@@ -620,7 +653,33 @@ const routineEl=$("#routine"), progressEl=$("#progress");
 function picMarkup(a){ return a.src==="emoji" ? `<span>${a.img||"🖼️"}</span>`
   : `<img alt="" src="${a.img}" onerror="this.replaceWith(document.createTextNode('🖼️'))">`; }
 function currentIndex(){ return state.activities.findIndex(a=>!a.done); }
+function renderRail(){
+  const track=$("#railTrack"); if(!track) return;
+  // bounds: 06:00-21:00, stretched to include any scheduled activity
+  let start=6*60, end=21*60;
+  const clocks=(state.activities||[]).filter(a=>(a.type==="clock")&&a.time);
+  clocks.forEach(a=>{ const [h,m]=a.time.split(":").map(Number);
+    if(!isNaN(h)){ const t=h*60+m; start=Math.min(start,Math.max(0,t-60)); end=Math.max(end,Math.min(24*60,t+60)); } });
+  const now=new Date(); const nowMin=now.getHours()*60+now.getMinutes();
+  const pct=v=>Math.max(0,Math.min(100,(v-start)/(end-start)*100));
+  $("#railPassed").style.height=pct(nowMin)+"%";
+  $("#railNow").style.top=pct(nowMin)+"%";
+  $("#railNow").textContent=clockEmoji(now);
+  // rebuild markers
+  [...track.querySelectorAll(".rail-mark")].forEach(el=>el.remove());
+  clocks.forEach(a=>{
+    const [h,m]=a.time.split(":").map(Number); if(isNaN(h)) return;
+    const t=h*60+m; const remain=minsToTime(a.time);
+    const el=document.createElement("div");
+    el.className="rail-mark"+(a.done?" done":(remain!==null&&remain<=10&&remain>=0?" soon":""));
+    el.style.top=pct(t)+"%";
+    el.innerHTML = a.src==="emoji"?`<span>${a.img}</span>`:`<img alt="" src="${a.img}">`;
+    el.addEventListener("click",()=>openDayline(a));
+    track.appendChild(el);
+  });
+}
 function renderRoutine(){
+  renderRail();
   const cur=currentIndex(); routineEl.innerHTML="";
   if(!state.activities.length){ routineEl.innerHTML=`<div class="empty"><div class="big">🗓️</div>No activities yet.<br>Tap ✏️, then “Add activity”.</div>`; }
   state.activities.forEach((a,i)=>{
@@ -1237,6 +1296,7 @@ function updateDayline(){
   const pct=v=>Math.max(0,Math.min(100,(v-start)/(end-start)*100));
   $("#dlEvent").style.left=pct(eventMin)+"%";
   $("#dlNow").style.left=pct(nowMin)+"%";
+  $("#dlNow").textContent=clockEmoji(now);
   $("#dlPassed").style.width=pct(nowMin)+"%";
   const remain=minsToTime(a.time);
   daylineEl.classList.toggle("soon", remain!==null && remain<=10 && remain>=0);
@@ -1279,6 +1339,18 @@ function chime(){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webki
 /* ============================================================
    PWA install
 ============================================================ */
+/* keep the screen awake while the app is open (kitchen-tablet mode) */
+let wakeLock=null;
+async function keepAwake(){
+  try{
+    if(!("wakeLock" in navigator)) return;
+    wakeLock=await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release",()=>{ wakeLock=null; });
+  }catch(e){ /* not granted / unsupported: system setting applies */ }
+}
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") keepAwake(); });
+keepAwake();
+
 /* single-file build: no external service worker */
 (function(){
   const manifest = { name:"Visual Routine", short_name:"Routine", display:"standalone",
