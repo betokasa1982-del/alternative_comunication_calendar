@@ -227,8 +227,8 @@
     display:flex;gap:8px;align-items:center;padding:10px;overflow-x:auto}
   .strip:empty::before{content:"…";color:var(--line);font-size:2em;margin:auto}
   .chip{flex:0 0 auto;width:76px;background:var(--surface-2);border-radius:14px;padding:6px 4px;text-align:center;border:2px solid var(--line)}
-  .chip .cp{height:48px;display:grid;place-items:center;font-size:32px;overflow:hidden}
-  .chip .cp img{width:100%;height:100%;object-fit:contain}
+  .chip .cp{height:48px;position:relative;display:grid;place-items:center;font-size:32px;overflow:hidden}
+  .chip .cp img{position:absolute;inset:1px;width:calc(100% - 2px);height:calc(100% - 2px);object-fit:contain}
   .chip .cw{font-size:.62em;font-weight:700;line-height:1.05;word-break:break-word}
   .chip:active{transform:scale(.94)}
   .strip-actions{display:flex;flex-direction:column;gap:8px;justify-content:center}
@@ -246,9 +246,9 @@
   .cats button.on{background:var(--calm);color:#fff;border-color:var(--calm)}
   .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));grid-auto-rows:1fr;gap:10px;padding-bottom:16px}
   .wcard{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:10px 6px 8px;text-align:center;position:relative;border:2px solid transparent;
-    display:flex;flex-direction:column;align-items:center;min-height:128px}
-  .wcard .wp{flex:0 0 66px;height:66px;width:100%;display:grid;place-items:center;font-size:40px;overflow:hidden;margin-bottom:4px}
-  .wcard .wp img{width:100%;height:100%;object-fit:contain}
+    display:flex;flex-direction:column;align-items:center;min-height:136px}
+  .wcard .wp{flex:0 0 74px;height:74px;width:100%;position:relative;display:grid;place-items:center;font-size:42px;overflow:hidden;margin-bottom:4px}
+  .wcard .wp img{position:absolute;inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);object-fit:contain}
   .wcard .wl{font-weight:700;font-size:.82em;line-height:1.12;min-height:2.3em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;word-break:normal;width:100%}
   .wcard:active{transform:scale(.95)}
   /* Fitzgerald key — standard AAC color coding, so the child finds words by color */
@@ -448,6 +448,7 @@
       <div class="field" style="flex:0 0 150px"><label>Category</label>
         <select id="catSel"></select>
       </div>
+      <button class="mini" id="autoTransBtn" title="Auto-translate from Portuguese" style="align-self:flex-end;flex:0 0 58px;width:58px;height:58px;font-size:24px">🌐</button>
     </div>
 
     <div class="seg" id="sourceSeg">
@@ -1148,13 +1149,23 @@ function wordPic(w){
 
 /* ---- speech ---- */
 const VOICE_LANG={pt:"pt-BR",sv:"sv-SE",en:"en-US"};
+function pickVoice(code){
+  const vs=(window.speechSynthesis&&window.speechSynthesis.getVoices())||[];
+  const norm=v=>(v.lang||"").replace("_","-").toLowerCase();
+  const target=(code||"").toLowerCase();
+  let v=vs.find(x=>norm(x)===target);                                   // exact: pt-BR
+  if(!v&&target.startsWith("pt")) v=vs.find(x=>norm(x).startsWith("pt")&&norm(x).includes("br")); // any Brazilian
+  if(!v) v=vs.find(x=>norm(x).startsWith(target.slice(0,2)));           // same language
+  return v||null;
+}
+if("speechSynthesis" in window){ try{ window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices(); }catch(e){} }
 function speak(text,lang){
   try{
     if(!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text);
     u.lang=VOICE_LANG[lang]||"pt-BR"; u.rate=0.85;
-    const v=(window.speechSynthesis.getVoices()||[]).find(v=>v.lang&&v.lang.toLowerCase().startsWith((VOICE_LANG[lang]||"").slice(0,2).toLowerCase()));
+    const v=pickVoice(VOICE_LANG[lang]||"pt-BR");
     if(v) u.voice=v;
     window.speechSynthesis.speak(u);
   }catch(e){}
@@ -1268,6 +1279,24 @@ function editCoreWord(w){
   $("#searchInput").value=w.q||"";
   coreReplaceId=w.id;
 }
+/* ---- auto-translate the PT word into SV + EN (MyMemory, free) ---- */
+$("#autoTransBtn").addEventListener("click",async()=>{
+  const pt=labelInput.value.trim(); if(!pt) return;
+  const b=$("#autoTransBtn"); b.textContent="…"; b.disabled=true;
+  const tr=async to=>{
+    try{
+      const r=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(pt)}&langpair=pt|${to}`);
+      const j=await r.json();
+      let t=(j&&j.responseData&&j.responseData.translatedText)||"";
+      return t.trim().replace(/[.!]+$/,"").toLowerCase();
+    }catch(e){ return ""; }
+  };
+  const [sv,en]=await Promise.all([tr("sv"),tr("en")]);
+  if(sv) $("#svInput").value=sv;
+  if(en) $("#enInput").value=en;
+  b.textContent="🌐"; b.disabled=false;
+});
+
 /* ---- add-word button (parents) ---- */
 $("#addWordBtn").addEventListener("click",()=>openSheet("word"));
 
