@@ -198,7 +198,8 @@
   .dayline .dl-label{font-size:1.5em;font-weight:800}
   .dl-time{font-size:2.4em;font-weight:800;color:var(--calm);font-variant-numeric:tabular-nums}
   .dl-track-wrap{width:min(86vw,760px);display:flex;align-items:center;gap:12px;margin-top:78px}
-  .dl-end{font-size:38px;flex:0 0 auto}
+  .dl-end{font-size:38px;flex:0 0 auto;display:grid;place-items:center}
+  .dl-end img{width:56px;height:56px;object-fit:contain}
   .dl-track{position:relative;flex:1;height:26px;background:var(--surface-2);border-radius:13px;box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
   .dl-passed{position:absolute;left:0;top:0;bottom:0;background:rgba(230,165,76,.55);border-radius:13px 0 0 13px}
   .dl-now{position:absolute;top:50%;transform:translate(-50%,-50%);width:78px;height:78px;border-radius:50%;background:#fff;border:5px solid var(--now);box-shadow:var(--shadow);z-index:2;display:grid;place-items:center;font-size:46px;line-height:1}
@@ -1229,24 +1230,30 @@ $("#transBtn").addEventListener("click",()=>{
 
 /* ---- ARASAAC pictograms for core words: fetch once, cache in the app ---- */
 let picsFetching=false;
+async function fetchPicFor(w){
+  try{
+    const r=await fetch(`${ARASAAC_API}/es/search/${encodeURIComponent(w.q)}`);
+    if(!r.ok) return false;
+    const data=await r.json();
+    const id=data&&data[0]&&(data[0]._id||data[0].id);
+    if(!id) return false;
+    const dataUrl=await urlToDataUrl(ARASAAC_IMG(id));
+    if(dataUrl){ state.aacPics[w.id]=dataUrl; state.aacPicsQ[w.id]=w.q; saveState(); return true; }
+  }catch(e){ /* offline or blocked: emoji fallback stays */ }
+  return false;
+}
 async function fetchCorePics(){
   if(picsFetching) return; picsFetching=true;
   const missing=CORE_VOCAB.filter(w=>!state.aacPics[w.id] || state.aacPicsQ[w.id]!==w.q);
   let got=0;
   for(const w of missing){
-    try{
-      const r=await fetch(`${ARASAAC_API}/es/search/${encodeURIComponent(w.q)}`);
-      if(!r.ok) continue;
-      const data=await r.json();
-      const id=data&&data[0]&&(data[0]._id||data[0].id);
-      if(!id) continue;
-      const dataUrl=await urlToDataUrl(ARASAAC_IMG(id));
-      if(dataUrl){ state.aacPics[w.id]=dataUrl; state.aacPicsQ[w.id]=w.q; got++; if(got%6===0){ saveState(); renderBoard(); renderStrip(); } }
-    }catch(e){ /* offline or blocked: emoji fallback stays */ }
+    if(await fetchPicFor(w)){ got++; if(got%6===0){ renderBoard(); renderStrip(); } }
   }
-  if(got){ saveState(); renderBoard(); renderStrip(); }
+  if(got){ renderBoard(); renderStrip(); }
   picsFetching=false;
 }
+// download pictograms at app start too (not only when the Talk tab opens)
+setTimeout(()=>{ try{ fetchCorePics(); }catch(e){} }, 1200);
 
 let coreReplaceId=null;
 function editCoreWord(w){
@@ -1347,7 +1354,9 @@ function updateDayline(){
   let start,end,zoom=false;
   if(remain!==null && remain>0 && remain<=120){ zoom=true; start=eventMin-120; end=eventMin; }
   else { [start,end]=dayBounds(eventMin); }
-  $("#dlEndL").textContent = zoom ? "⏳" : "☀️";
+  const waitW=CORE_VOCAB.find(w=>w.labels&&w.labels.en==="wait");
+  const waitPic=waitW&&state.aacPics[waitW.id];
+  $("#dlEndL").innerHTML = zoom ? (waitPic?`<img alt="" src="${waitPic}">`:"⏳") : "☀️";
   $("#dlEndR").textContent = zoom ? "" : "🌙";
   const pct=v=>Math.max(0,Math.min(100,(v-start)/(end-start)*100));
   $("#dlEvent").style.left=Math.max(6,Math.min(94,pct(eventMin)))+"%";
@@ -1360,13 +1369,10 @@ function updateDayline(){
   // "wait" chip: the ARASAAC wait pictogram + word, while it's not time yet
   const waiting = remain!==null && remain>0;
   const wc=$("#dlWait"); wc.classList.toggle("show",waiting);
-  if(waiting){
-    const ww=CORE_VOCAB.find(w=>w.labels&&w.labels.en==="wait");
-    if(ww){
-      const pic=state.aacPics[ww.id];
-      $("#dlWaitPic").innerHTML = pic?`<img alt="" src="${pic}">`:`<span>⏳</span>`;
-      $("#dlWaitLbl").textContent = wordLabel(ww,state.settings.lang);
-    }
+  if(waiting && waitW){
+    $("#dlWaitPic").innerHTML = waitPic?`<img alt="" src="${waitPic}">`:`<span>⏳</span>`;
+    $("#dlWaitLbl").textContent = wordLabel(waitW,state.settings.lang);
+    if(!waitPic) fetchPicFor(waitW).then(ok=>{ if(ok&&dlActivity) updateDayline(); }); // self-heal
   }
 }
 function closeDayline(){ daylineEl.classList.remove("open","soon","arrived"); clearInterval(dlInterval); dlActivity=null; }
