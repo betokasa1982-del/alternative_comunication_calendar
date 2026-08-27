@@ -221,6 +221,27 @@
   .dayline.arrived .dl-msg{color:var(--done)}
   .dl-actions{display:flex;gap:14px}
 
+  /* caregiver toolbar (edit mode only) */
+  .caretools{display:none;align-items:center;gap:10px;margin:0 16px 10px;padding:10px 14px;
+    background:var(--surface-2);border:2px dashed var(--line);border-radius:16px}
+  body.editing .caretools{display:flex}
+  .ct-title{flex:1;color:var(--ink-soft);font-weight:700;font-size:.85em}
+  .ct-btn{height:52px;padding:0 18px;border-radius:14px;background:var(--surface);border:2px solid var(--line);font-weight:700;color:var(--calm)}
+  .ct-btn:active{transform:scale(.96)}
+
+  /* Need Help pillar */
+  #view-help{display:none;min-height:60dvh}
+  #view-help.on{display:flex;align-items:center;justify-content:center}
+  .help-card{width:min(92%,540px);min-height:320px;background:var(--surface);border:4px solid var(--danger);
+    border-radius:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:18px;padding:30px;text-align:center}
+  .help-card:active{transform:scale(.97)}
+  .help-card.speaking{border-color:var(--done);background:#f2fbf1}
+  .hc-pic{width:140px;height:140px;border-radius:24px;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;font-size:84px}
+  .hc-pic img{width:88%;height:88%;object-fit:contain}
+  .hc-label{font-weight:800;font-size:1.7em;line-height:1.15}
+  button:focus-visible,.wcard:focus-visible{outline:4px solid var(--calm);outline-offset:2px}
+
   /* AAC talk board */
   .strip-wrap{display:flex;gap:10px;align-items:stretch;margin-bottom:10px}
   .strip{flex:1;min-height:96px;background:var(--surface);border-radius:18px;box-shadow:var(--shadow);
@@ -347,6 +368,13 @@
     </div>
   </header>
 
+  <div class="caretools" id="careTools">
+    <span class="ct-title">Backup &amp; restore</span>
+    <button class="ct-btn" id="backupBtn">⬇ Backup</button>
+    <button class="ct-btn" id="restoreBtn">⬆ Restore</button>
+    <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" />
+  </div>
+
   <div class="install" id="installBanner">
     <div class="txt" id="installText">Install this app on your tablet.</div>
     <button class="go" id="installBtn">Install</button>
@@ -404,14 +432,23 @@
       <div class="board" id="board"></div>
       <div class="addbar"><button class="addbtn" id="addWordBtn">＋ &nbsp;Add word</button></div>
     </section>
+
+    <!-- NEED HELP (Phase 1: structure only) -->
+    <section class="view" id="view-help">
+      <button class="help-card" id="helpCard" aria-label="I need help">
+        <div class="hc-pic" id="hcPic">🆘</div>
+        <div class="hc-label" id="hcLabel">Preciso de ajuda</div>
+      </button>
+    </section>
   </main>
 </div>
 
 <!-- bottom tabs -->
 <nav class="tabs">
-  <button data-tab="routine" class="on"><span class="ic">🗓️</span><span id="tabRoutineLbl">Routine</span></button>
-  <button data-tab="countdown"><span class="ic">⭐</span><span id="tabCountdownLbl">Countdown</span></button>
-  <button data-tab="talk"><span class="ic">💬</span><span id="tabTalkLbl">Talk</span></button>
+  <button data-tab="routine" class="on" aria-current="page"><span class="ic">🏠</span><span id="tabRoutineLbl">Routine</span></button>
+  <button data-tab="talk"><span class="ic">💬</span><span id="tabTalkLbl">Communicate</span></button>
+  <button data-tab="countdown"><span class="ic">⭐</span><span id="tabCountdownLbl">Prepare</span></button>
+  <button data-tab="help"><span class="ic">🧘</span><span id="tabHelpLbl">Help</span></button>
 </nav>
 
 <!-- Editor sheet (shared: activity | event) -->
@@ -584,17 +621,17 @@ const MS = 86400000;
 /* child-facing strings (only these are translated; admin UI stays English) */
 const STR = {
   pt:{ toGo:"Faltam", one:"Falta", days:"dias", day:"dia", today:"É hoje! 🎉", passed:"Já passou", stamp:"Marcar hoje",
-       tabRoutine:"Rotina", tabCountdown:"Contagem", tabTalk:"Falar", catsAll:"Todas", soon:"Quase!", itsTime:"Chegou a hora! 🎉",
+       tabRoutine:"Rotina", tabCountdown:"Preparar", tabTalk:"Comunicar", tabHelp:"Ajuda", helpPhrase:"Preciso de ajuda", catsAll:"Todas", soon:"Quase!", itsTime:"Chegou a hora! 🎉",
        cats:{social:"Social",people:"Pessoas",actions:"Ações",feel:"Sentimentos",food:"Comida",places:"Lugares",things:"Coisas"},
        wd:["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"],
        mo:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"] },
   sv:{ toGo:"", one:"", days:"dagar", day:"dag", today:"Idag! 🎉", passed:"Passerat", stamp:"Markera idag",
-       tabRoutine:"Rutin", tabCountdown:"Nedräkning", tabTalk:"Prata", catsAll:"Alla", soon:"Snart!", itsTime:"Nu är det dags! 🎉",
+       tabRoutine:"Rutin", tabCountdown:"Förbereda", tabTalk:"Kommunicera", tabHelp:"Hjälp", helpPhrase:"Jag behöver hjälp", catsAll:"Alla", soon:"Snart!", itsTime:"Nu är det dags! 🎉",
        cats:{social:"Socialt",people:"Personer",actions:"Handlingar",feel:"Känslor",food:"Mat",places:"Platser",things:"Saker"},
        wd:["Mån","Tis","Ons","Tor","Fre","Lör","Sön"],
        mo:["Januari","Februari","Mars","April","Maj","Juni","Juli","Augusti","September","Oktober","November","December"] },
   en:{ toGo:"", one:"", days:"days", day:"day", today:"Today! 🎉", passed:"Passed", stamp:"Mark today",
-       tabRoutine:"Routine", tabCountdown:"Countdown", tabTalk:"Talk", catsAll:"All", soon:"Almost!", itsTime:"It's time! 🎉",
+       tabRoutine:"Routine", tabCountdown:"Prepare", tabTalk:"Communicate", tabHelp:"Help", helpPhrase:"I need help", catsAll:"All", soon:"Almost!", itsTime:"It's time! 🎉",
        cats:{social:"Social",people:"People",actions:"Actions",feel:"Feelings",food:"Food",places:"Places",things:"Things"},
        wd:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
        mo:["January","February","March","April","May","June","July","August","September","October","November","December"] }
@@ -668,6 +705,8 @@ function applyLang(){
   $("#tabRoutineLbl").textContent = T().tabRoutine;
   $("#tabCountdownLbl").textContent = T().tabCountdown;
   $("#tabTalkLbl").textContent = T().tabTalk;
+  $("#tabHelpLbl").textContent = T().tabHelp;
+  renderHelpPillar();
   renderAll();
 }
 langBtn.addEventListener("click",()=>{
@@ -687,12 +726,13 @@ lockBtn.addEventListener("pointerdown",()=>{ if(!document.body.classList.contain
 
 /* ---------------- tabs ---------------- */
 document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));
-  b.classList.add("on");
+  document.querySelectorAll(".tabs button").forEach(x=>{ x.classList.remove("on"); x.removeAttribute("aria-current"); });
+  b.classList.add("on"); b.setAttribute("aria-current","page");
   const tab=b.dataset.tab;
   $("#view-routine").classList.toggle("on",tab==="routine");
   $("#view-countdown").classList.toggle("on",tab==="countdown");
   $("#view-talk").classList.toggle("on",tab==="talk");
+  $("#view-help").classList.toggle("on",tab==="help");
   if(tab==="talk") fetchCorePics();
 }));
 
@@ -1299,6 +1339,90 @@ $("#autoTransBtn").addEventListener("click",async()=>{
 
 /* ---- add-word button (parents) ---- */
 $("#addWordBtn").addEventListener("click",()=>openSheet("word"));
+
+/* ============================================================
+   BACKUP / RESTORE (Phase 1) — caregiver mode only.
+   Export: full persisted state. Import: validate EVERYTHING first,
+   confirm, then replace atomically and reload. Never partial.
+============================================================ */
+const APP_VERSION="phase-1";
+const BACKUP_FORMAT="visual-routine-backup";
+function buildBackup(){
+  return {
+    format:BACKUP_FORMAT, version:1,
+    createdAt:new Date().toISOString(), appVersion:APP_VERSION,
+    data:{
+      settings:state.settings||{}, activities:state.activities||[],
+      favorites:state.favorites||[], events:state.events||[],
+      aacCards:state.aacCards||[], aacPics:state.aacPics||{},
+      aacPicsQ:state.aacPicsQ||{}, aacHidden:state.aacHidden||[]
+    }
+  };
+}
+$("#backupBtn").addEventListener("click",()=>{
+  try{
+    const blob=new Blob([JSON.stringify(buildBackup())],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    const d=new Date(), pad=n=>String(n).padStart(2,"0");
+    a.download=`visual-routine-backup-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+  }catch(e){ alert("Could not create the backup file."); }
+});
+function validateBackup(obj){
+  if(!obj||typeof obj!=="object") return "This file is not a valid backup.";
+  if(obj.format!==BACKUP_FORMAT) return "This file is not a valid backup.";
+  if(obj.version!==1) return "This backup was made by an incompatible version.";
+  const d=obj.data;
+  if(!d||typeof d!=="object") return "This file is not a valid backup.";
+  const arrays=["activities","favorites","events","aacCards","aacHidden"];
+  for(const k of arrays){ if(!(k in d)||!Array.isArray(d[k])) return "This file is not a valid backup."; }
+  const objects=["settings","aacPics","aacPicsQ"];
+  for(const k of objects){ if(!(k in d)||typeof d[k]!=="object"||Array.isArray(d[k])) return "This file is not a valid backup."; }
+  return null; // valid
+}
+$("#restoreBtn").addEventListener("click",()=>$("#restoreFile").click());
+$("#restoreFile").addEventListener("change",e=>{
+  const f=e.target.files&&e.target.files[0];
+  e.target.value="";
+  if(!f) return;
+  const fr=new FileReader();
+  fr.onload=()=>{
+    let obj=null;
+    try{ obj=JSON.parse(fr.result); }catch(err){ alert("This file is not a valid backup."); return; }
+    const problem=validateBackup(obj);
+    if(problem){ alert(problem); return; }
+    const d=obj.data;
+    const when=(obj.createdAt||"").slice(0,10)||"unknown date";
+    const msg=`Replace ALL current data with this backup?\n\nBackup from ${when}\n`+
+      `${d.activities.length} activities · ${d.favorites.length} favorites · ${d.events.length} events · ${d.aacCards.length} custom words`;
+    if(!confirm(msg)) return; // cancel changes nothing
+    const candidate={ settings:d.settings, activities:d.activities, favorites:d.favorites,
+      events:d.events, aacCards:d.aacCards, aacPics:d.aacPics, aacPicsQ:d.aacPicsQ, aacHidden:d.aacHidden };
+    try{
+      localStorage.setItem(STORE_KEY, JSON.stringify(candidate)); // atomic, all-or-nothing
+    }catch(err){ alert("Could not save the backup (storage full?). Your current data was NOT changed."); return; }
+    try{ location.reload(); }catch(err){ /* test environments: state is persisted; reload not available */ }
+  };
+  fr.onerror=()=>alert("Could not read the file.");
+  fr.readAsText(f);
+});
+
+/* ============================================================
+   NEED HELP pillar (Phase 1: structure only)
+============================================================ */
+function renderHelpPillar(){
+  const lbl=$("#hcLabel"); if(!lbl) return;
+  lbl.textContent=T().helpPhrase;
+  const hw=CORE_VOCAB.find(w=>w.labels&&w.labels.pt==="ajuda");
+  const pic=hw&&state.aacPics[hw.id];
+  $("#hcPic").innerHTML = pic?`<img alt="" src="${pic}">`:"🆘";
+}
+$("#helpCard").addEventListener("click",()=>{
+  speak(T().helpPhrase, state.settings.lang);
+  const c=$("#helpCard"); c.classList.add("speaking");
+  setTimeout(()=>c.classList.remove("speaking"),1200);
+});
 
 /* ============================================================
    HELP (illustrated, minimal text)
