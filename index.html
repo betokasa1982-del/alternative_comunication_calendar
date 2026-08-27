@@ -61,7 +61,7 @@
   .card.done .go{background:var(--done)}
   .card .go.t-check{background:var(--done)}
   .card .go.t-clock{background:var(--calm);font-size:38px}
-  .card.soon{border-color:var(--now)}
+  .card.soon{border-color:var(--now);border-style:dashed}
   .card.soon .sub b{color:var(--now)}
   .card .check{position:absolute;top:-10px;right:-10px;width:40px;height:40px;border-radius:50%;background:var(--done);color:#fff;display:none;place-items:center;font-size:22px;box-shadow:var(--shadow)}
   .card.done .check{display:grid}
@@ -171,25 +171,23 @@
 
   /* day rail: vertical sun->moon timeline beside the routine list */
   .day-wrap{display:flex;gap:10px;align-items:stretch}
-  .rail{flex:0 0 92px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+  .rail{flex:0 0 74px;opacity:.85;display:flex;flex-direction:column;align-items:flex-start;gap:6px;
     position:sticky;top:8px;align-self:flex-start;height:calc(100dvh - 270px);min-height:380px;padding-left:4px}
   .rail-end{font-size:24px;line-height:1;width:30px;text-align:center}
   .rail-track{flex:1;width:22px;margin-left:4px;background:var(--surface);border-radius:11px;position:relative;
     box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
   .rail-passed{position:absolute;top:0;left:0;right:0;background:rgba(230,165,76,.55);border-radius:11px 11px 0 0}
-  .rail-now{position:absolute;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;
+  .rail-now{position:absolute;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;
     background:#fff;border:3px solid var(--now);box-shadow:var(--shadow);z-index:3;
-    display:grid;place-items:center;font-size:30px;line-height:1}
-  .rail-mark{position:absolute;left:calc(100% + 12px);transform:translateY(-50%);width:46px;height:46px;border-radius:12px;
+    display:grid;place-items:center;font-size:25px;line-height:1}
+  .rail-mark{position:absolute;left:calc(100% + 10px);transform:translateY(-50%);width:38px;height:38px;border-radius:12px;
     background:var(--surface);border:3px solid var(--calm);display:grid;place-items:center;overflow:hidden;font-size:24px;z-index:2}
   .rail-mark::before{content:"";position:absolute;right:100%;top:50%;transform:translateY(-50%);width:12px;height:4px;background:var(--calm);border-radius:2px}
   .rail-mark img{width:88%;height:88%;object-fit:contain}
   .rail-mark.done{border-color:var(--done);opacity:.55}
   .rail-mark.soon{border-color:var(--now)}
-  @media (prefers-reduced-motion: no-preference){
-    .rail-mark.soon{animation:rail-pulse 1.6s ease-in-out infinite}
-    @keyframes rail-pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,165,76,.45)}50%{box-shadow:0 0 0 10px rgba(230,165,76,0)}}
-  }
+  /* "almost" is a discreet state: dashed outline, no continuous pulse */
+  .rail-mark.soon{border-style:dashed}
   .rail-mark:active{transform:translateY(-50%) scale(.94)}
 
   /* day-line (sun -> moon) for clock activities */
@@ -208,10 +206,7 @@
   .dl-event::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);width:5px;height:14px;background:var(--calm);border-radius:3px}
   .dl-event>span,.dl-event>img{border-radius:14px;overflow:hidden}
   .dayline.soon .dl-event{border-color:var(--now)}
-  @media (prefers-reduced-motion: no-preference){
-    .dayline.soon .dl-event{animation:dl-pulse 1.6s ease-in-out infinite}
-    @keyframes dl-pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,165,76,.45)}50%{box-shadow:0 0 0 14px rgba(230,165,76,0)}}
-  }
+  .dayline.soon .dl-event{border-style:dashed}
   .dl-wait{display:none;align-items:center;gap:12px;background:var(--surface-2);border:3px solid var(--line);
     border-radius:18px;padding:10px 18px;font-weight:800;font-size:1.2em}
   .dl-wait.show{display:flex}
@@ -228,34 +223,22 @@
   .stchip.st-soon{border-color:var(--now);color:#8a5d16}
   .stchip.st-done{border-color:var(--done);color:#3c6b39;background:#eef7ed}
 
-  /* NOW / NEXT / LATER block */
-  .nowblock{display:flex;gap:12px;margin-bottom:14px;align-items:stretch}
-  .nb-now{flex:1.4;background:var(--surface);border:4px solid var(--now);border-radius:22px;box-shadow:var(--shadow);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;text-align:center;min-height:220px}
-  .nb-now:active{transform:scale(.985)}
-  .nb-now.alldone{border-color:var(--done)}
-  .nb-tag{font-weight:800;letter-spacing:1px;font-size:.85em;color:var(--ink-soft);background:var(--surface-2);
-    border-radius:10px;padding:3px 12px}
-  .nb-now .nb-tag{color:#8a5d16;background:#fdf3e3}
+  /* current activity = the single strong emphasis in the list */
+  .card.now{border-width:4px;border-color:var(--now);box-shadow:0 6px 18px rgba(230,165,76,.18)}
+  .card.now .pic{width:112px;height:112px;font-size:62px}
+  .card.now .label{font-size:1.5em}
+  .card.done{opacity:.62}
+  .card.done .label{font-weight:700}
+  .card-live{display:flex;align-items:center;gap:10px;margin-top:8px;max-width:340px}
+  .nb-bar{flex:1;height:14px;background:var(--surface-2);border-radius:7px;overflow:hidden;display:block}
+  .nb-bar span{display:block;height:100%;background:var(--now);border-radius:7px;width:100%}
+  .card-live b{font-variant-numeric:tabular-nums;font-weight:800}
+  .nb-tag{font-weight:800;letter-spacing:1px;font-size:.85em;color:var(--ink-soft);background:var(--surface-2);border-radius:10px;padding:3px 12px}
   .nb-pic{width:96px;height:96px;border-radius:18px;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;font-size:56px;position:relative}
   .nb-pic img{position:absolute;inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);object-fit:contain}
   .nb-pic.sm{width:64px;height:64px;font-size:38px}
   .nb-label{font-weight:800;font-size:1.3em;line-height:1.15}
   .nb-label.sm{font-size:1em}
-  .nb-meta{color:var(--ink-soft);font-weight:700}
-  .nb-live{display:flex;align-items:center;gap:10px;width:100%;max-width:320px}
-  .nb-bar{flex:1;height:14px;background:var(--surface-2);border-radius:7px;overflow:hidden;display:block}
-  .nb-bar span{display:block;height:100%;background:var(--now);border-radius:7px;width:100%}
-  .nb-live b{font-variant-numeric:tabular-nums}
-  .nb-side{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0}
-  .nb-next,.nb-later{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
-  .nb-next{flex:1;justify-content:center}
-  .nb-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-  .nb-chip{display:flex;flex-direction:column;align-items:center;gap:2px;width:64px}
-  .nb-chip .cpic{width:48px;height:48px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;font-size:28px;position:relative}
-  .nb-chip .cpic img{position:absolute;inset:1px;width:calc(100% - 2px);height:calc(100% - 2px);object-fit:contain}
-  .nb-chip .cl{font-size:.62em;font-weight:700;line-height:1.05;text-align:center;word-break:break-word}
-  @media (max-width:640px){ .nowblock{flex-direction:column} .nb-now{min-height:180px} }
 
   /* First -> Then strip (behavioral pair, distinct from NOW/NEXT) */
   .ftstrip{display:flex;align-items:center;justify-content:center;gap:14px;background:var(--surface);border:3px dashed var(--calm);
@@ -442,26 +425,6 @@
     <!-- ROUTINE -->
     <section class="view on" id="view-routine">
       <div class="progress" id="progress"></div>
-      <div class="nowblock" id="nowBlock" style="display:none">
-        <button class="nb-now" id="nbNow" aria-label="Current activity">
-          <span class="nb-tag" id="nbNowTag">AGORA</span>
-          <span class="nb-pic" id="nbNowPic">🖼️</span>
-          <span class="nb-label" id="nbNowLabel"></span>
-          <span class="nb-meta" id="nbNowMeta"></span>
-          <span class="nb-live" id="nbLive" style="display:none"><span class="nb-bar"><span id="nbFill"></span></span><b id="nbTime">--:--</b></span>
-        </button>
-        <div class="nb-side">
-          <div class="nb-next" id="nbNext">
-            <span class="nb-tag" id="nbNextTag">DEPOIS</span>
-            <span class="nb-pic sm" id="nbNextPic">🖼️</span>
-            <span class="nb-label sm" id="nbNextLabel"></span>
-          </div>
-          <div class="nb-later" id="nbLater" style="display:none">
-            <span class="nb-tag" id="nbLaterTag">MAIS TARDE</span>
-            <div class="nb-chips" id="nbChips"></div>
-          </div>
-        </div>
-      </div>
       <div class="ftstrip" id="ftStrip" style="display:none"></div>
       <div class="day-wrap">
         <div class="rail" id="rail">
@@ -862,7 +825,7 @@ function activityState(a,i,cur){
   if((a.type||"timer")==="clock"){ const r=minsToTime(a.time); if(r!==null&&r>=0&&r<=SOON_MIN) return "soon"; }
   return "next";
 }
-const ST_ICON={next:"○",soon:"⏳",now:"▶",done:"✓"};
+const ST_ICON={next:"○",soon:"◌",now:"▶",done:"✓"};
 function stateChip(st){ const w={next:T().stNext,soon:T().stSoon,now:T().stNow,done:T().stDone}[st];
   return `<span class="stchip st-${st}" aria-label="${w}">${ST_ICON[st]} ${w}</span>`; }
 function renderRail(){
@@ -891,52 +854,24 @@ function renderRail(){
   });
 }
 function nbPicMarkup(a){ return a.src==="emoji"?`<span>${a.img}</span>`:`<img alt="" src="${a.img}">`; }
-function renderNowBlock(){
-  const blk=$("#nowBlock"); if(!blk) return;
-  const acts=state.activities||[];
-  if(!acts.length){ blk.style.display="none"; return; }
-  blk.style.display="flex";
-  $("#nbNowTag").textContent=T().nowLbl;
-  $("#nbNextTag").textContent=T().nextLbl;
-  $("#nbLaterTag").textContent=T().laterLbl;
-  const cur=currentIndex();
-  const nowBtn=$("#nbNow");
-  $("#nbLive").style.display="none";
-  if(cur<0){ // every activity finished — celebrate, never fall back to an old one
-    nowBtn.classList.add("alldone");
-    $("#nbNowPic").innerHTML="🎉";
-    $("#nbNowLabel").textContent=T().routineDone;
-    $("#nbNowMeta").textContent="";
-    nowBtn.onclick=null;
-    $("#nbNext").style.display="none"; $("#nbLater").style.display="none";
-    return;
-  }
-  nowBtn.classList.remove("alldone");
-  const a=acts[cur], type=a.type||"timer";
-  $("#nbNowPic").innerHTML=nbPicMarkup(a);
-  $("#nbNowLabel").textContent=a.label||"";
-  $("#nbNowMeta").textContent = type==="timer" ? `⏱️ ${a.minutes} min` : (type==="clock" ? `🕐 ${a.time||"--:--"}` : "");
-  nowBtn.onclick=()=>doActivityAction(a);
-  // NEXT — never an unexplained empty space
-  $("#nbNext").style.display="";
-  const nx=nextIndex();
-  if(nx>=0){ const b=acts[nx];
-    $("#nbNextPic").innerHTML=nbPicMarkup(b);
-    $("#nbNextLabel").textContent=b.label||"";
-  } else {
-    $("#nbNextPic").innerHTML="🎉";
-    $("#nbNextLabel").textContent=T().routineDone;
-  }
-  // LATER — just enough for predictability (max 3), completed never shown
-  const later=laterList(3);
-  $("#nbLater").style.display = later.length ? "" : "none";
-  $("#nbChips").innerHTML = later.map(x=>`<span class="nb-chip"><span class="cpic">${nbPicMarkup(x)}</span><span class="cl">${escapeHtml(x.label||"")}</span></span>`).join("");
-}
+let ftForce=false; // explicit "show it now" from the caregiver toolbar
 function renderFT(){
   const el=$("#ftStrip"); if(!el) return;
   const ft=state.firstThen;
-  if(!ft||!ft.first||!ft.then){ el.style.display="none"; el.innerHTML=""; return; }
+  if(!ft||!ft.first||!ft.then){ el.style.display="none"; el.innerHTML=""; ftForce=false; return; }
+  // contextual: only while the "first" item is the activity happening now
+  const cur=currentIndex(), curA=cur>=0?state.activities[cur]:null;
+  const relevant = ftForce || document.body.classList.contains("editing") ||
+    (curA && (curA.label||"")===(ft.first.label||""));
+  const doneNow = !!(curA && (curA.label||"")===(ft.then.label||"")); // reached the "then" step
+  if(!relevant && !doneNow){ el.style.display="none"; el.innerHTML=""; return; }
   el.style.display="flex";
+  if(doneNow){
+    el.innerHTML=`<span class="ft-cell"><span class="nb-tag">✓ ${T().stDone}</span><span class="nb-pic sm">${nbPicMarkup(ft.then)}</span><span class="nb-label sm">${escapeHtml(ft.then.label||"")}</span></span>
+      <span class="ft-x" id="ftRemove" role="button" aria-label="Remove">✕</span>`;
+    el.onclick=(e)=>{ if(e.target.closest("#ftRemove")){ state.firstThen=null; saveState(); renderFT(); } };
+    return;
+  }
   el.innerHTML=`
     <span class="ft-cell"><span class="nb-tag">${T().ftFirst}</span><span class="nb-pic sm">${nbPicMarkup(ft.first)}</span><span class="nb-label sm">${escapeHtml(ft.first.label||"")}</span></span>
     <span class="ft-arrow">→</span>
@@ -948,7 +883,6 @@ function renderFT(){
   };
 }
 function renderRoutine(){
-  renderNowBlock();
   renderFT();
   renderRail();
   const cur=currentIndex(); routineEl.innerHTML="";
@@ -960,10 +894,14 @@ function renderRoutine(){
     card.className="card"+(a.done?" done":"")+(i===cur?" now":"")+(soon?" soon":"");
     const st=activityState(a,i,cur);
     const sub = stateChip(st) + (type==="timer" ? ` ⏱️ ${a.minutes} min` : (type==="clock" ? ` 🕐 ${a.time||"--:--"}` : ""));
+    const isNow = st==="now";
+    if(isNow) card.setAttribute("aria-current","step");
     const goIcon = a.done ? "↺" : (type==="timer" ? "▶" : (type==="clock" ? "🕐" : "✓"));
     card.innerHTML=`
       <div class="pic">${picMarkup(a)}</div>
-      <div class="meta"><div class="label">${escapeHtml(a.label||"Activity")}</div><div class="sub">${sub}</div></div>
+      <div class="meta"><div class="label">${escapeHtml(a.label||"Activity")}</div><div class="sub">${sub}</div>
+        ${isNow?`<div class="card-live" id="cardLive" style="display:none"><span class="nb-bar"><span id="nbFill"></span></span><b id="nbTime">--:--</b></div>`:""}
+      </div>
       <button class="go t-${type}" aria-label="Start">${goIcon}</button>
       <div class="edit-tools"><button class="mini up">▲</button><button class="mini down">▼</button><button class="mini del">🗑️</button></div>
       <div class="check">✓</div>`;
@@ -1554,7 +1492,10 @@ function openFtSheet(){
   ftPaintSlots();
   $("#ftSheet").classList.add("open");
 }
-$("#ftBtn").addEventListener("click",openFtSheet);
+$("#ftBtn").addEventListener("click",()=>{
+  if(state.firstThen && !document.body.classList.contains("editing")){ ftForce=!ftForce; renderFT(); return; }
+  openFtSheet();
+});
 $("#ftSlotA").addEventListener("click",()=>{ ftSlot="first"; ftPaintSlots(); });
 $("#ftSlotB").addEventListener("click",()=>{ ftSlot="then"; ftPaintSlots(); });
 $("#ftCancel").addEventListener("click",()=>$("#ftSheet").classList.remove("open"));
@@ -1794,10 +1735,11 @@ function loop(){ const remain=Math.max(0,endAt-Date.now());
   $("#miniFill").style.width=pct+"%";
   tTime.textContent=fmt(remain);
   $("#miniTime").textContent=fmt(remain);
-  // reflect the SAME timer on the NOW card when it belongs to the current activity
+  // reflect the SAME timer inside the current activity's own card (single place)
   const curA=state.activities[currentIndex()];
-  if(activeActivity&&curA&&activeActivity.id===curA.id){
-    $("#nbLive").style.display="flex";
+  const live=$("#cardLive");
+  if(live&&activeActivity&&curA&&activeActivity.id===curA.id){
+    live.style.display="flex";
     $("#nbFill").style.width=pct+"%";
     $("#nbTime").textContent=fmt(remain);
   }
