@@ -221,6 +221,54 @@
   .dayline.arrived .dl-msg{color:var(--done)}
   .dl-actions{display:flex;gap:14px}
 
+  /* temporal-state chips (text + symbol, never color-only) */
+  .stchip{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:10px;font-size:.78em;font-weight:800;
+    background:var(--surface-2);border:2px solid var(--line);color:var(--ink-soft);margin-right:6px}
+  .stchip.st-now{border-color:var(--now);color:#8a5d16;background:#fdf3e3}
+  .stchip.st-soon{border-color:var(--now);color:#8a5d16}
+  .stchip.st-done{border-color:var(--done);color:#3c6b39;background:#eef7ed}
+
+  /* NOW / NEXT / LATER block */
+  .nowblock{display:flex;gap:12px;margin-bottom:14px;align-items:stretch}
+  .nb-now{flex:1.4;background:var(--surface);border:4px solid var(--now);border-radius:22px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;text-align:center;min-height:220px}
+  .nb-now:active{transform:scale(.985)}
+  .nb-now.alldone{border-color:var(--done)}
+  .nb-tag{font-weight:800;letter-spacing:1px;font-size:.85em;color:var(--ink-soft);background:var(--surface-2);
+    border-radius:10px;padding:3px 12px}
+  .nb-now .nb-tag{color:#8a5d16;background:#fdf3e3}
+  .nb-pic{width:96px;height:96px;border-radius:18px;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;font-size:56px;position:relative}
+  .nb-pic img{position:absolute;inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);object-fit:contain}
+  .nb-pic.sm{width:64px;height:64px;font-size:38px}
+  .nb-label{font-weight:800;font-size:1.3em;line-height:1.15}
+  .nb-label.sm{font-size:1em}
+  .nb-meta{color:var(--ink-soft);font-weight:700}
+  .nb-live{display:flex;align-items:center;gap:10px;width:100%;max-width:320px}
+  .nb-bar{flex:1;height:14px;background:var(--surface-2);border-radius:7px;overflow:hidden;display:block}
+  .nb-bar span{display:block;height:100%;background:var(--now);border-radius:7px;width:100%}
+  .nb-live b{font-variant-numeric:tabular-nums}
+  .nb-side{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0}
+  .nb-next,.nb-later{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+  .nb-next{flex:1;justify-content:center}
+  .nb-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .nb-chip{display:flex;flex-direction:column;align-items:center;gap:2px;width:64px}
+  .nb-chip .cpic{width:48px;height:48px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;font-size:28px;position:relative}
+  .nb-chip .cpic img{position:absolute;inset:1px;width:calc(100% - 2px);height:calc(100% - 2px);object-fit:contain}
+  .nb-chip .cl{font-size:.62em;font-weight:700;line-height:1.05;text-align:center;word-break:break-word}
+  @media (max-width:640px){ .nowblock{flex-direction:column} .nb-now{min-height:180px} }
+
+  /* First -> Then strip (behavioral pair, distinct from NOW/NEXT) */
+  .ftstrip{display:flex;align-items:center;justify-content:center;gap:14px;background:var(--surface);border:3px dashed var(--calm);
+    border-radius:20px;box-shadow:var(--shadow);padding:14px;margin-bottom:14px;position:relative;cursor:pointer}
+  .ft-cell{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:110px}
+  .ft-cell .nb-tag{font-size:.75em}
+  .ft-arrow{font-size:34px;color:var(--calm);font-weight:800}
+  .ft-x{position:absolute;top:-10px;right:-10px;width:36px;height:36px;border-radius:50%;background:var(--danger);color:#fff;display:none;place-items:center;font-size:16px;box-shadow:var(--shadow)}
+  body.editing .ft-x{display:grid}
+
+  .ft-slot{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--surface-2);border:3px solid var(--line);border-radius:16px;padding:10px 14px;min-width:120px}
+  .ft-slot.on{border-color:var(--calm);background:#f0f6fd}
+
   /* caregiver toolbar (edit mode only) */
   .caretools{display:none;align-items:center;gap:10px;margin:0 16px 10px;padding:10px 14px;
     background:var(--surface-2);border:2px dashed var(--line);border-radius:16px}
@@ -394,6 +442,27 @@
     <!-- ROUTINE -->
     <section class="view on" id="view-routine">
       <div class="progress" id="progress"></div>
+      <div class="nowblock" id="nowBlock" style="display:none">
+        <button class="nb-now" id="nbNow" aria-label="Current activity">
+          <span class="nb-tag" id="nbNowTag">AGORA</span>
+          <span class="nb-pic" id="nbNowPic">🖼️</span>
+          <span class="nb-label" id="nbNowLabel"></span>
+          <span class="nb-meta" id="nbNowMeta"></span>
+          <span class="nb-live" id="nbLive" style="display:none"><span class="nb-bar"><span id="nbFill"></span></span><b id="nbTime">--:--</b></span>
+        </button>
+        <div class="nb-side">
+          <div class="nb-next" id="nbNext">
+            <span class="nb-tag" id="nbNextTag">DEPOIS</span>
+            <span class="nb-pic sm" id="nbNextPic">🖼️</span>
+            <span class="nb-label sm" id="nbNextLabel"></span>
+          </div>
+          <div class="nb-later" id="nbLater" style="display:none">
+            <span class="nb-tag" id="nbLaterTag">MAIS TARDE</span>
+            <div class="nb-chips" id="nbChips"></div>
+          </div>
+        </div>
+      </div>
+      <div class="ftstrip" id="ftStrip" style="display:none"></div>
       <div class="day-wrap">
         <div class="rail" id="rail">
           <div class="rail-end">☀️</div>
@@ -407,6 +476,7 @@
       </div>
       <div class="addbar">
         <button class="addbtn secondary" id="openLibraryBtn">☆ &nbsp;Library</button>
+        <button class="addbtn secondary" id="ftBtn">⇄ &nbsp;First→Then</button>
         <button class="addbtn" id="addActivityBtn">＋ &nbsp;Add activity</button>
       </div>
     </section>
@@ -545,6 +615,24 @@
   </div>
 </div>
 
+<!-- First→Then picker (caregiver) -->
+<div class="scrim" id="ftSheet">
+  <div class="sheet">
+    <h2>First → Then</h2>
+    <p class="sub" style="margin:0 0 8px">Pick from your activities and library. Tap a slot, then tap an item.</p>
+    <div class="ft-slots" style="display:flex;gap:12px;justify-content:center;align-items:center;margin:10px 0">
+      <button class="ft-slot on" id="ftSlotA" data-slot="first"><span class="nb-tag">First</span><span class="nb-pic sm" id="ftPicA">＋</span><span class="nb-label sm" id="ftLblA">—</span></button>
+      <span class="ft-arrow">→</span>
+      <button class="ft-slot" id="ftSlotB" data-slot="then"><span class="nb-tag">Then</span><span class="nb-pic sm" id="ftPicB">＋</span><span class="nb-label sm" id="ftLblB">—</span></button>
+    </div>
+    <div class="lib-grid" id="ftPickGrid" style="max-height:34dvh;overflow:auto"></div>
+    <div class="sheet-actions">
+      <button class="btn-ghost" id="ftCancel">Cancel</button>
+      <button class="btn-primary" id="ftSave">✓ Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- Day-line overlay (clock activities) -->
 <div class="dayline" id="dayline">
   <div class="dl-label" id="dlLabel"></div>
@@ -621,17 +709,26 @@ const MS = 86400000;
 /* child-facing strings (only these are translated; admin UI stays English) */
 const STR = {
   pt:{ toGo:"Faltam", one:"Falta", days:"dias", day:"dia", today:"É hoje! 🎉", passed:"Já passou", stamp:"Marcar hoje",
-       tabRoutine:"Rotina", tabCountdown:"Preparar", tabTalk:"Comunicar", tabHelp:"Ajuda", helpPhrase:"Preciso de ajuda", catsAll:"Todas", soon:"Quase!", itsTime:"Chegou a hora! 🎉",
+       tabRoutine:"Rotina", tabCountdown:"Preparar", tabTalk:"Comunicar", tabHelp:"Ajuda", helpPhrase:"Preciso de ajuda",
+       nowLbl:"AGORA", nextLbl:"DEPOIS", laterLbl:"MAIS TARDE", routineDone:"Terminou a rotina! 🎉",
+       stNext:"Próximo", stSoon:"Quase", stNow:"Agora", stDone:"Concluído",
+       ftFirst:"Primeiro", ftThen:"Depois", catsAll:"Todas", soon:"Quase!", itsTime:"Chegou a hora! 🎉",
        cats:{social:"Social",people:"Pessoas",actions:"Ações",feel:"Sentimentos",food:"Comida",places:"Lugares",things:"Coisas"},
        wd:["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"],
        mo:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"] },
   sv:{ toGo:"", one:"", days:"dagar", day:"dag", today:"Idag! 🎉", passed:"Passerat", stamp:"Markera idag",
-       tabRoutine:"Rutin", tabCountdown:"Förbereda", tabTalk:"Kommunicera", tabHelp:"Hjälp", helpPhrase:"Jag behöver hjälp", catsAll:"Alla", soon:"Snart!", itsTime:"Nu är det dags! 🎉",
+       tabRoutine:"Rutin", tabCountdown:"Förbereda", tabTalk:"Kommunicera", tabHelp:"Hjälp", helpPhrase:"Jag behöver hjälp",
+       nowLbl:"NU", nextLbl:"SEDAN", laterLbl:"SENARE", routineDone:"Rutinen är klar! 🎉",
+       stNext:"Nästa", stSoon:"Snart", stNow:"Nu", stDone:"Klar",
+       ftFirst:"Först", ftThen:"Sedan", catsAll:"Alla", soon:"Snart!", itsTime:"Nu är det dags! 🎉",
        cats:{social:"Socialt",people:"Personer",actions:"Handlingar",feel:"Känslor",food:"Mat",places:"Platser",things:"Saker"},
        wd:["Mån","Tis","Ons","Tor","Fre","Lör","Sön"],
        mo:["Januari","Februari","Mars","April","Maj","Juni","Juli","Augusti","September","Oktober","November","December"] },
   en:{ toGo:"", one:"", days:"days", day:"day", today:"Today! 🎉", passed:"Passed", stamp:"Mark today",
-       tabRoutine:"Routine", tabCountdown:"Prepare", tabTalk:"Communicate", tabHelp:"Help", helpPhrase:"I need help", catsAll:"All", soon:"Almost!", itsTime:"It's time! 🎉",
+       tabRoutine:"Routine", tabCountdown:"Prepare", tabTalk:"Communicate", tabHelp:"Help", helpPhrase:"I need help",
+       nowLbl:"NOW", nextLbl:"NEXT", laterLbl:"LATER", routineDone:"Routine finished! 🎉",
+       stNext:"Next", stSoon:"Almost", stNow:"Now", stDone:"Done",
+       ftFirst:"First", ftThen:"Then", catsAll:"All", soon:"Almost!", itsTime:"It's time! 🎉",
        cats:{social:"Social",people:"People",actions:"Actions",feel:"Feelings",food:"Food",places:"Places",things:"Things"},
        wd:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
        mo:["January","February","March","April","May","June","July","August","September","October","November","December"] }
@@ -666,7 +763,8 @@ function seed(){
     aacCards:[],
     aacPics:{},
     aacPicsQ:{},
-    aacHidden:[]
+    aacHidden:[],
+    firstThen:null
   };
 }
 let state = loadState() || seed();
@@ -676,6 +774,7 @@ if(!state.favorites) state.favorites=[];
 if(!state.aacCards) state.aacCards=[];
 if(!state.aacPics) state.aacPics={};
 if(!state.aacPicsQ) state.aacPicsQ={};
+if(!("firstThen" in state)) state.firstThen=null;
 if(!state.aacHidden) state.aacHidden=[];
 
 /* ---------------- date helpers ---------------- */
@@ -691,6 +790,7 @@ function minsToTime(hhmm){
   return (h*60+m) - (now.getHours()*60+now.getMinutes());
 }
 function clockEmoji(d){ const h=d.getHours()%12; return String.fromCodePoint(0x1F550 + ((h+11)%12)); }
+const SOON_MIN=10; // minutes before a scheduled time counts as "almost" — used by cards, rail and day-line alike
 setInterval(()=>{ if((state.activities||[]).some(a=>(a.type==="clock")&&!a.done)) renderRoutine(); },60000);
 
 /* ---------------- shorthand ---------------- */
@@ -742,7 +842,29 @@ document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",
 const routineEl=$("#routine"), progressEl=$("#progress");
 function picMarkup(a){ return a.src==="emoji" ? `<span>${a.img||"🖼️"}</span>`
   : `<img alt="" src="${a.img}" onerror="this.replaceWith(document.createTextNode('🖼️'))">`; }
+function doActivityAction(a){
+  const type=a.type||"timer";
+  if(a.done){ a.done=false; saveState(); renderRoutine(); return; } // undo accidental "done"
+  if(type==="timer") startTimer(a);
+  else if(type==="clock") openDayline(a);
+  else { a.done=true; saveState(); renderRoutine(); }
+}
 function currentIndex(){ return state.activities.findIndex(a=>!a.done); }
+function nextIndex(){ const cur=currentIndex(); if(cur<0) return -1;
+  for(let i=cur+1;i<state.activities.length;i++) if(!state.activities[i].done) return i; return -1; }
+function laterList(max){ const nx=nextIndex(); if(nx<0) return [];
+  const out=[]; for(let i=nx+1;i<state.activities.length&&out.length<(max||3);i++)
+    if(!state.activities[i].done) out.push(state.activities[i]); return out; }
+/* temporal state ladder: done > now > soon > next (deterministic, index-based + clock-based) */
+function activityState(a,i,cur){
+  if(a.done) return "done";
+  if(i===cur) return "now";
+  if((a.type||"timer")==="clock"){ const r=minsToTime(a.time); if(r!==null&&r>=0&&r<=SOON_MIN) return "soon"; }
+  return "next";
+}
+const ST_ICON={next:"○",soon:"⏳",now:"▶",done:"✓"};
+function stateChip(st){ const w={next:T().stNext,soon:T().stSoon,now:T().stNow,done:T().stDone}[st];
+  return `<span class="stchip st-${st}" aria-label="${w}">${ST_ICON[st]} ${w}</span>`; }
 function renderRail(){
   const track=$("#railTrack"); if(!track) return;
   // bounds: 06:00-21:00, stretched to include any scheduled activity
@@ -761,23 +883,83 @@ function renderRail(){
     const [h,m]=a.time.split(":").map(Number); if(isNaN(h)) return;
     const t=h*60+m; const remain=minsToTime(a.time);
     const el=document.createElement("div");
-    el.className="rail-mark"+(a.done?" done":(remain!==null&&remain<=10&&remain>=0?" soon":""));
+    el.className="rail-mark"+(a.done?" done":(remain!==null&&remain<=SOON_MIN&&remain>=0?" soon":""));
     el.style.top=pct(t)+"%";
     el.innerHTML = a.src==="emoji"?`<span>${a.img}</span>`:`<img alt="" src="${a.img}">`;
     el.addEventListener("click",()=>openDayline(a));
     track.appendChild(el);
   });
 }
+function nbPicMarkup(a){ return a.src==="emoji"?`<span>${a.img}</span>`:`<img alt="" src="${a.img}">`; }
+function renderNowBlock(){
+  const blk=$("#nowBlock"); if(!blk) return;
+  const acts=state.activities||[];
+  if(!acts.length){ blk.style.display="none"; return; }
+  blk.style.display="flex";
+  $("#nbNowTag").textContent=T().nowLbl;
+  $("#nbNextTag").textContent=T().nextLbl;
+  $("#nbLaterTag").textContent=T().laterLbl;
+  const cur=currentIndex();
+  const nowBtn=$("#nbNow");
+  $("#nbLive").style.display="none";
+  if(cur<0){ // every activity finished — celebrate, never fall back to an old one
+    nowBtn.classList.add("alldone");
+    $("#nbNowPic").innerHTML="🎉";
+    $("#nbNowLabel").textContent=T().routineDone;
+    $("#nbNowMeta").textContent="";
+    nowBtn.onclick=null;
+    $("#nbNext").style.display="none"; $("#nbLater").style.display="none";
+    return;
+  }
+  nowBtn.classList.remove("alldone");
+  const a=acts[cur], type=a.type||"timer";
+  $("#nbNowPic").innerHTML=nbPicMarkup(a);
+  $("#nbNowLabel").textContent=a.label||"";
+  $("#nbNowMeta").textContent = type==="timer" ? `⏱️ ${a.minutes} min` : (type==="clock" ? `🕐 ${a.time||"--:--"}` : "");
+  nowBtn.onclick=()=>doActivityAction(a);
+  // NEXT — never an unexplained empty space
+  $("#nbNext").style.display="";
+  const nx=nextIndex();
+  if(nx>=0){ const b=acts[nx];
+    $("#nbNextPic").innerHTML=nbPicMarkup(b);
+    $("#nbNextLabel").textContent=b.label||"";
+  } else {
+    $("#nbNextPic").innerHTML="🎉";
+    $("#nbNextLabel").textContent=T().routineDone;
+  }
+  // LATER — just enough for predictability (max 3), completed never shown
+  const later=laterList(3);
+  $("#nbLater").style.display = later.length ? "" : "none";
+  $("#nbChips").innerHTML = later.map(x=>`<span class="nb-chip"><span class="cpic">${nbPicMarkup(x)}</span><span class="cl">${escapeHtml(x.label||"")}</span></span>`).join("");
+}
+function renderFT(){
+  const el=$("#ftStrip"); if(!el) return;
+  const ft=state.firstThen;
+  if(!ft||!ft.first||!ft.then){ el.style.display="none"; el.innerHTML=""; return; }
+  el.style.display="flex";
+  el.innerHTML=`
+    <span class="ft-cell"><span class="nb-tag">${T().ftFirst}</span><span class="nb-pic sm">${nbPicMarkup(ft.first)}</span><span class="nb-label sm">${escapeHtml(ft.first.label||"")}</span></span>
+    <span class="ft-arrow">→</span>
+    <span class="ft-cell"><span class="nb-tag">${T().ftThen}</span><span class="nb-pic sm">${nbPicMarkup(ft.then)}</span><span class="nb-label sm">${escapeHtml(ft.then.label||"")}</span></span>
+    <span class="ft-x" id="ftRemove" role="button" aria-label="Remove">✕</span>`;
+  el.onclick=(e)=>{
+    if(e.target.closest("#ftRemove")){ state.firstThen=null; saveState(); renderFT(); return; }
+    speak(`${T().ftFirst} ${ft.first.label}. ${T().ftThen} ${ft.then.label}.`, state.settings.lang);
+  };
+}
 function renderRoutine(){
+  renderNowBlock();
+  renderFT();
   renderRail();
   const cur=currentIndex(); routineEl.innerHTML="";
   if(!state.activities.length){ routineEl.innerHTML=`<div class="empty"><div class="big">🗓️</div>No activities yet.<br>Tap ✏️, then “Add activity”.</div>`; }
   state.activities.forEach((a,i)=>{
     const card=document.createElement("div");
     const type=a.type||"timer";
-    const soon = type==="clock" && !a.done && minsToTime(a.time)!==null && minsToTime(a.time)<=10 && minsToTime(a.time)>=0;
+    const soon = type==="clock" && !a.done && minsToTime(a.time)!==null && minsToTime(a.time)<=SOON_MIN && minsToTime(a.time)>=0;
     card.className="card"+(a.done?" done":"")+(i===cur?" now":"")+(soon?" soon":"");
-    const sub = type==="timer" ? `⏱️ ${a.minutes} min` : (type==="clock" ? `🕐 ${a.time||"--:--"}${soon?` · <b>${T().soon}</b>`:""}` : "");
+    const st=activityState(a,i,cur);
+    const sub = stateChip(st) + (type==="timer" ? ` ⏱️ ${a.minutes} min` : (type==="clock" ? ` 🕐 ${a.time||"--:--"}` : ""));
     const goIcon = a.done ? "↺" : (type==="timer" ? "▶" : (type==="clock" ? "🕐" : "✓"));
     card.innerHTML=`
       <div class="pic">${picMarkup(a)}</div>
@@ -785,12 +967,7 @@ function renderRoutine(){
       <button class="go t-${type}" aria-label="Start">${goIcon}</button>
       <div class="edit-tools"><button class="mini up">▲</button><button class="mini down">▼</button><button class="mini del">🗑️</button></div>
       <div class="check">✓</div>`;
-    card.querySelector(".go").addEventListener("click",()=>{
-      if(a.done){ a.done=false; saveState(); renderRoutine(); return; } // undo accidental "done"
-      if(type==="timer") startTimer(a);
-      else if(type==="clock") openDayline(a);
-      else { a.done=true; saveState(); renderRoutine(); }
-    });
+    card.querySelector(".go").addEventListener("click",()=>doActivityAction(a));
     card.querySelector(".up").addEventListener("click",()=>moveA(i,-1));
     card.querySelector(".down").addEventListener("click",()=>moveA(i,1));
     card.querySelector(".del").addEventListener("click",()=>{state.activities.splice(i,1);saveState();renderRoutine();});
@@ -1341,6 +1518,52 @@ $("#autoTransBtn").addEventListener("click",async()=>{
 $("#addWordBtn").addEventListener("click",()=>openSheet("word"));
 
 /* ============================================================
+   FIRST → THEN (Phase 2) — behavioral pair, optional, caregiver-set.
+   Reuses existing activities + favorites as sources; stores a
+   SNAPSHOT (label/src/img) so later edits don't break the pair.
+============================================================ */
+let ftDraft=null, ftSlot="first";
+function ftItemPool(){
+  const seen=new Set(), pool=[];
+  [...(state.activities||[]),...(state.favorites||[])].forEach(x=>{
+    const k=(x.label||"")+"|"+(x.img||""); if(seen.has(k)) return; seen.add(k);
+    pool.push({label:x.label,src:x.src,img:x.img});
+  });
+  return pool;
+}
+function ftPaintSlots(){
+  const d=ftDraft||{};
+  $("#ftPicA").innerHTML = d.first?nbPicMarkup(d.first):"＋";
+  $("#ftLblA").textContent = d.first?d.first.label:"—";
+  $("#ftPicB").innerHTML = d.then?nbPicMarkup(d.then):"＋";
+  $("#ftLblB").textContent = d.then?d.then.label:"—";
+  $("#ftSlotA").classList.toggle("on",ftSlot==="first");
+  $("#ftSlotB").classList.toggle("on",ftSlot==="then");
+}
+function openFtSheet(){
+  ftDraft = state.firstThen?{first:{...state.firstThen.first},then:{...state.firstThen.then}}:{first:null,then:null};
+  ftSlot="first";
+  const g=$("#ftPickGrid"); g.innerHTML="";
+  ftItemPool().forEach(item=>{
+    const b=document.createElement("button");
+    b.className="lib-card";
+    b.innerHTML=`<span class="lp">${nbPicMarkup(item)}</span><span class="ln">${escapeHtml(item.label||"")}</span>`;
+    b.addEventListener("click",()=>{ ftDraft[ftSlot]={...item}; ftSlot = ftSlot==="first"?"then":"first"; ftPaintSlots(); });
+    g.appendChild(b);
+  });
+  ftPaintSlots();
+  $("#ftSheet").classList.add("open");
+}
+$("#ftBtn").addEventListener("click",openFtSheet);
+$("#ftSlotA").addEventListener("click",()=>{ ftSlot="first"; ftPaintSlots(); });
+$("#ftSlotB").addEventListener("click",()=>{ ftSlot="then"; ftPaintSlots(); });
+$("#ftCancel").addEventListener("click",()=>$("#ftSheet").classList.remove("open"));
+$("#ftSave").addEventListener("click",()=>{
+  if(ftDraft&&ftDraft.first&&ftDraft.then){ state.firstThen={first:ftDraft.first,then:ftDraft.then}; saveState(); renderRoutine(); }
+  $("#ftSheet").classList.remove("open");
+});
+
+/* ============================================================
    BACKUP / RESTORE (Phase 1) — caregiver mode only.
    Export: full persisted state. Import: validate EVERYTHING first,
    confirm, then replace atomically and reload. Never partial.
@@ -1355,7 +1578,8 @@ function buildBackup(){
       settings:state.settings||{}, activities:state.activities||[],
       favorites:state.favorites||[], events:state.events||[],
       aacCards:state.aacCards||[], aacPics:state.aacPics||{},
-      aacPicsQ:state.aacPicsQ||{}, aacHidden:state.aacHidden||[]
+      aacPicsQ:state.aacPicsQ||{}, aacHidden:state.aacHidden||[],
+      firstThen:state.firstThen||null
     }
   };
 }
@@ -1398,7 +1622,8 @@ $("#restoreFile").addEventListener("change",e=>{
       `${d.activities.length} activities · ${d.favorites.length} favorites · ${d.events.length} events · ${d.aacCards.length} custom words`;
     if(!confirm(msg)) return; // cancel changes nothing
     const candidate={ settings:d.settings, activities:d.activities, favorites:d.favorites,
-      events:d.events, aacCards:d.aacCards, aacPics:d.aacPics, aacPicsQ:d.aacPicsQ, aacHidden:d.aacHidden };
+      events:d.events, aacCards:d.aacCards, aacPics:d.aacPics, aacPicsQ:d.aacPicsQ, aacHidden:d.aacHidden,
+      firstThen:("firstThen" in d)?d.firstThen:null }; // F1 backups have no firstThen: safe default
     try{
       localStorage.setItem(STORE_KEY, JSON.stringify(candidate)); // atomic, all-or-nothing
     }catch(err){ alert("Could not save the backup (storage full?). Your current data was NOT changed."); return; }
@@ -1516,9 +1741,9 @@ function updateDayline(){
   $("#dlNow").style.left=pct(nowMin)+"%";
   $("#dlNow").textContent=clockEmoji(now);
   $("#dlPassed").style.width=pct(nowMin)+"%";
-  daylineEl.classList.toggle("soon", remain!==null && remain<=10 && remain>=0);
+  daylineEl.classList.toggle("soon", remain!==null && remain<=SOON_MIN && remain>=0);
   daylineEl.classList.toggle("arrived", remain!==null && remain<=0);
-  $("#dlMsg").textContent = remain!==null && remain<=0 ? T().itsTime : (remain!==null && remain<=10 ? T().soon : "");
+  $("#dlMsg").textContent = remain!==null && remain<=0 ? T().itsTime : (remain!==null && remain<=SOON_MIN ? T().soon : "");
   // "wait" chip: the ARASAAC wait pictogram + word, while it's not time yet
   const waiting = remain!==null && remain>0;
   const wc=$("#dlWait"); wc.classList.toggle("show",waiting);
@@ -1569,13 +1794,20 @@ function loop(){ const remain=Math.max(0,endAt-Date.now());
   $("#miniFill").style.width=pct+"%";
   tTime.textContent=fmt(remain);
   $("#miniTime").textContent=fmt(remain);
+  // reflect the SAME timer on the NOW card when it belongs to the current activity
+  const curA=state.activities[currentIndex()];
+  if(activeActivity&&curA&&activeActivity.id===curA.id){
+    $("#nbLive").style.display="flex";
+    $("#nbFill").style.width=pct+"%";
+    $("#nbTime").textContent=fmt(remain);
+  }
   if(remain<=0){ finishTimer(); return; } raf=requestAnimationFrame(loop); }
 function fmt(ms){ const s=Math.round(ms/1000),m=Math.floor(s/60),ss=s%60; return `${m}:${String(ss).padStart(2,"0")}`; }
 function finishTimer(){ cancelAnimationFrame(raf); timerEl.classList.add("finished"); disc.style.setProperty("--pct",100);
   if(timerMin) miniTimer.classList.add("finished");
   chime(); }
 function stopTimer(){ cancelAnimationFrame(raf); timerEl.classList.remove("open","finished");
-  miniTimer.classList.remove("show","finished"); timerMin=false; activeActivity=null; }
+  miniTimer.classList.remove("show","finished"); timerMin=false; activeActivity=null; renderRoutine(); }
 $("#tStop").addEventListener("click",stopTimer);
 $("#tDone").addEventListener("click",()=>{
   if(activeActivity) activeActivity.done=true; saveState(); renderRoutine(); stopTimer();
