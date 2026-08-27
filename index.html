@@ -60,7 +60,7 @@
   .card.done{opacity:.55}
   .card.done .go{background:var(--done)}
   .card .go.t-check{background:var(--done)}
-  .card .go.t-clock{background:var(--calm)}
+  .card .go.t-clock{background:var(--calm);font-size:38px}
   .card.soon{border-color:var(--now)}
   .card.soon .sub b{color:var(--now)}
   .card .check{position:absolute;top:-10px;right:-10px;width:40px;height:40px;border-radius:50%;background:var(--done);color:#fff;display:none;place-items:center;font-size:22px;box-shadow:var(--shadow)}
@@ -177,9 +177,9 @@
   .rail-track{flex:1;width:22px;margin-left:4px;background:var(--surface);border-radius:11px;position:relative;
     box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
   .rail-passed{position:absolute;top:0;left:0;right:0;background:rgba(230,165,76,.55);border-radius:11px 11px 0 0}
-  .rail-now{position:absolute;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;
+  .rail-now{position:absolute;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;
     background:#fff;border:3px solid var(--now);box-shadow:var(--shadow);z-index:3;
-    display:grid;place-items:center;font-size:19px;line-height:1}
+    display:grid;place-items:center;font-size:30px;line-height:1}
   .rail-mark{position:absolute;left:calc(100% + 12px);transform:translateY(-50%);width:46px;height:46px;border-radius:12px;
     background:var(--surface);border:3px solid var(--calm);display:grid;place-items:center;overflow:hidden;font-size:24px;z-index:2}
   .rail-mark::before{content:"";position:absolute;right:100%;top:50%;transform:translateY(-50%);width:12px;height:4px;background:var(--calm);border-radius:2px}
@@ -201,7 +201,7 @@
   .dl-end{font-size:38px;flex:0 0 auto}
   .dl-track{position:relative;flex:1;height:26px;background:var(--surface-2);border-radius:13px;box-shadow:inset 0 2px 6px rgba(38,51,61,.08)}
   .dl-passed{position:absolute;left:0;top:0;bottom:0;background:rgba(230,165,76,.55);border-radius:13px 0 0 13px}
-  .dl-now{position:absolute;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:#fff;border:4px solid var(--now);box-shadow:var(--shadow);z-index:2;display:grid;place-items:center;font-size:24px;line-height:1}
+  .dl-now{position:absolute;top:50%;transform:translate(-50%,-50%);width:78px;height:78px;border-radius:50%;background:#fff;border:5px solid var(--now);box-shadow:var(--shadow);z-index:2;display:grid;place-items:center;font-size:46px;line-height:1}
   .dl-event{position:absolute;bottom:calc(100% + 14px);transform:translateX(-50%);width:76px;height:76px;border-radius:20px;background:var(--surface);border:4px solid var(--calm);box-shadow:var(--shadow);display:grid;place-items:center;font-size:40px;z-index:1}
   .dl-event img{width:88%;height:88%;object-fit:contain}
   .dl-event::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);width:5px;height:14px;background:var(--calm);border-radius:3px}
@@ -211,6 +211,11 @@
     .dayline.soon .dl-event{animation:dl-pulse 1.6s ease-in-out infinite}
     @keyframes dl-pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,165,76,.45)}50%{box-shadow:0 0 0 14px rgba(230,165,76,0)}}
   }
+  .dl-wait{display:none;align-items:center;gap:12px;background:var(--surface-2);border:3px solid var(--line);
+    border-radius:18px;padding:10px 18px;font-weight:800;font-size:1.2em}
+  .dl-wait.show{display:flex}
+  .dl-wait-pic{width:64px;height:64px;border-radius:14px;background:var(--surface);display:grid;place-items:center;overflow:hidden;font-size:38px}
+  .dl-wait-pic img{width:90%;height:90%;object-fit:contain}
   .dl-msg{min-height:1.5em;font-weight:800;font-size:1.25em;color:var(--now)}
   .dayline.arrived .dl-msg{color:var(--done)}
   .dl-actions{display:flex;gap:14px}
@@ -505,14 +510,18 @@
 <div class="dayline" id="dayline">
   <div class="dl-label" id="dlLabel"></div>
   <div class="dl-time" id="dlTime">--:--</div>
+  <div class="dl-wait" id="dlWait">
+    <div class="dl-wait-pic" id="dlWaitPic">⏳</div>
+    <span id="dlWaitLbl">esperar</span>
+  </div>
   <div class="dl-track-wrap">
-    <div class="dl-end">☀️</div>
+    <div class="dl-end" id="dlEndL">☀️</div>
     <div class="dl-track" id="dlTrack">
       <div class="dl-passed" id="dlPassed"></div>
       <div class="dl-event" id="dlEvent"></div>
       <div class="dl-now" id="dlNow"></div>
     </div>
-    <div class="dl-end">🌙</div>
+    <div class="dl-end" id="dlEndR">🌙</div>
   </div>
   <div class="dl-msg" id="dlMsg"></div>
   <div class="dl-actions">
@@ -1121,6 +1130,7 @@ const CORE_VOCAB=[
  ["things","⚽","bola","boll","ball","pelota"],
  ["things","🎵","música","musik","music","música"],
  ["things","🧩","quebra-cabeça","pussel","puzzle","puzzle"],
+ ["actions","⏳","esperar","vänta","wait","esperar"],
 ].map((r,i)=>({id:"core"+i,cat:r[0],src:"emoji",img:r[1],labels:{pt:r[2],sv:r[3],en:r[4]},q:r[5],core:true}));
 
 const CAT_ORDER=["social","people","actions","feel","food","places","things"];
@@ -1331,17 +1341,33 @@ function updateDayline(){
   const a=dlActivity; if(!a) return;
   const [h,m]=(a.time||"12:00").split(":").map(Number);
   const eventMin=h*60+m;
-  const [start,end]=dayBounds(eventMin);
   const now=new Date(); const nowMin=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  const remain=minsToTime(a.time);
+  // adaptive scale: far away -> whole day (sun->moon); <=2h -> zoomed runway to the event
+  let start,end,zoom=false;
+  if(remain!==null && remain>0 && remain<=120){ zoom=true; start=eventMin-120; end=eventMin; }
+  else { [start,end]=dayBounds(eventMin); }
+  $("#dlEndL").textContent = zoom ? "⏳" : "☀️";
+  $("#dlEndR").textContent = zoom ? "" : "🌙";
   const pct=v=>Math.max(0,Math.min(100,(v-start)/(end-start)*100));
   $("#dlEvent").style.left=Math.max(6,Math.min(94,pct(eventMin)))+"%";
   $("#dlNow").style.left=pct(nowMin)+"%";
   $("#dlNow").textContent=clockEmoji(now);
   $("#dlPassed").style.width=pct(nowMin)+"%";
-  const remain=minsToTime(a.time);
   daylineEl.classList.toggle("soon", remain!==null && remain<=10 && remain>=0);
   daylineEl.classList.toggle("arrived", remain!==null && remain<=0);
   $("#dlMsg").textContent = remain!==null && remain<=0 ? T().itsTime : (remain!==null && remain<=10 ? T().soon : "");
+  // "wait" chip: the ARASAAC wait pictogram + word, while it's not time yet
+  const waiting = remain!==null && remain>0;
+  const wc=$("#dlWait"); wc.classList.toggle("show",waiting);
+  if(waiting){
+    const ww=CORE_VOCAB.find(w=>w.labels&&w.labels.en==="wait");
+    if(ww){
+      const pic=state.aacPics[ww.id];
+      $("#dlWaitPic").innerHTML = pic?`<img alt="" src="${pic}">`:`<span>⏳</span>`;
+      $("#dlWaitLbl").textContent = wordLabel(ww,state.settings.lang);
+    }
+  }
 }
 function closeDayline(){ daylineEl.classList.remove("open","soon","arrived"); clearInterval(dlInterval); dlActivity=null; }
 $("#dlClose").addEventListener("click",closeDayline);
