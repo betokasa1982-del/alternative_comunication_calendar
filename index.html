@@ -229,6 +229,21 @@
   .card.now .label{font-size:1.5em}
   .card.done{opacity:.62}
   .card.done .label{font-weight:700}
+  /* clock ring — the timer's circular language applied to "time until a scheduled hour" */
+  .clockring{flex:0 0 auto;width:74px;height:74px;border-radius:50%;position:relative;margin-left:6px;
+    background:conic-gradient(var(--now) calc(var(--pct)*1%), var(--surface-2) 0);
+    box-shadow:inset 0 0 0 6px var(--surface-2)}
+  .clockring .cr-center{position:absolute;inset:15%;border-radius:50%;background:var(--surface);
+    display:grid;place-items:center;font-weight:800;font-size:.86em;font-variant-numeric:tabular-nums;
+    box-shadow:inset 0 0 0 3px #fff}
+  .card.now .clockring{width:88px;height:88px}
+  .clockring.next{background:var(--surface-2)}
+  .clockring.soon{box-shadow:inset 0 0 0 6px var(--surface-2), 0 0 0 3px var(--now)}
+  .clockring.arrived{background:var(--now)}
+  .clockring.done{background:var(--done)}
+  .clockring.done .cr-center{color:var(--done)}
+  @media (max-width:520px){ .clockring{width:62px;height:62px} .card.now .clockring{width:70px;height:70px} }
+
   .card-live{display:flex;align-items:center;gap:10px;margin-top:8px;max-width:340px}
   .nb-bar{flex:1;height:14px;background:var(--surface-2);border-radius:7px;overflow:hidden;display:block}
   .nb-bar span{display:block;height:100%;background:var(--now);border-radius:7px;width:100%}
@@ -754,6 +769,7 @@ function minsToTime(hhmm){
 }
 function clockEmoji(d){ const h=d.getHours()%12; return String.fromCodePoint(0x1F550 + ((h+11)%12)); }
 const SOON_MIN=10; // minutes before a scheduled time counts as "almost" — used by cards, rail and day-line alike
+const APPROACH_MIN=120; // the approach window the day-line already zooms into; the clock ring fills across it
 setInterval(()=>{ if((state.activities||[]).some(a=>(a.type==="clock")&&!a.done)) renderRoutine(); },60000);
 
 /* ---------------- shorthand ---------------- */
@@ -853,6 +869,26 @@ function renderRail(){
     track.appendChild(el);
   });
 }
+/* Clock ring: how close we are to a scheduled hour.
+   Fill runs across the SAME approach window the day-line zooms into
+   (APPROACH_MIN); no activity duration is invented. Outside that window
+   the ring stays empty — "not yet". Clock activities without a time get
+   no ring at all (existing fallback applies). */
+function clockRingMarkup(a,st){
+  if((a.type||"timer")!=="clock" || !a.time) return "";
+  const remain=minsToTime(a.time);
+  let pct=0, cls="next", aria;
+  if(st==="done"){ pct=100; cls="done"; aria=`${a.label||""} ${a.time}`; }
+  else if(remain===null){ return ""; }
+  else if(remain<=0){ pct=100; cls="arrived"; aria=`${a.label||""} — ${T().itsTime}`; }
+  else {
+    pct=Math.max(0,Math.min(100,(1-remain/APPROACH_MIN)*100));
+    cls = remain<=SOON_MIN ? "soon" : "next";
+    aria=`${a.label||""} ${a.time}`;
+  }
+  const center = st==="done" ? "✓" : escapeHtml(a.time);
+  return `<div class="clockring ${cls}" style="--pct:${pct.toFixed(1)}" role="img" aria-label="${escapeHtml(aria)}"><span class="cr-center">${center}</span></div>`;
+}
 function nbPicMarkup(a){ return a.src==="emoji"?`<span>${a.img}</span>`:`<img alt="" src="${a.img}">`; }
 let ftForce=false; // explicit "show it now" from the caregiver toolbar
 function renderFT(){
@@ -900,8 +936,9 @@ function renderRoutine(){
     card.innerHTML=`
       <div class="pic">${picMarkup(a)}</div>
       <div class="meta"><div class="label">${escapeHtml(a.label||"Activity")}</div><div class="sub">${sub}</div>
-        ${isNow?`<div class="card-live" id="cardLive" style="display:none"><span class="nb-bar"><span id="nbFill"></span></span><b id="nbTime">--:--</b></div>`:""}
+        ${(isNow&&type==="timer")?`<div class="card-live" id="cardLive" style="display:none"><span class="nb-bar"><span id="nbFill"></span></span><b id="nbTime">--:--</b></div>`:""}
       </div>
+      ${clockRingMarkup(a,st)}
       <button class="go t-${type}" aria-label="Start">${goIcon}</button>
       <div class="edit-tools"><button class="mini up">▲</button><button class="mini down">▼</button><button class="mini del">🗑️</button></div>
       <div class="check">✓</div>`;
@@ -1671,7 +1708,7 @@ function updateDayline(){
   const remain=minsToTime(a.time);
   // adaptive scale: far away -> whole day (sun->moon); <=2h -> zoomed runway to the event
   let start,end,zoom=false;
-  if(remain!==null && remain>0 && remain<=120){ zoom=true; start=eventMin-120; end=eventMin; }
+  if(remain!==null && remain>0 && remain<=APPROACH_MIN){ zoom=true; start=eventMin-APPROACH_MIN; end=eventMin; }
   else { [start,end]=dayBounds(eventMin); }
   const waitW=CORE_VOCAB.find(w=>w.labels&&w.labels.en==="wait");
   const waitPic=waitW&&state.aacPics[waitW.id];
